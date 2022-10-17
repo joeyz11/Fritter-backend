@@ -26,6 +26,7 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
  */
 const isValidFreetContent = (req: Request, res: Response, next: NextFunction) => {
   const {content} = req.body as {content: string};
+  const satire = req.body.satire;
   if (!content.trim()) {
     res.status(400).json({
       error: 'Freet content must be at least one character long.'
@@ -39,6 +40,13 @@ const isValidFreetContent = (req: Request, res: Response, next: NextFunction) =>
     });
     return;
   }
+  // console.log(satire)
+  // if (satire === undefined) {
+  //   res.status(400).json({
+  //     error: 'Must select value for satire.'
+  //   });
+  //   return;
+  // }
 
   next();
 };
