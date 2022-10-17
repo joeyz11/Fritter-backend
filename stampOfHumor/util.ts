@@ -6,7 +6,7 @@ import type {StampOfHumor, PopulatedStampOfHumor} from '../stampOfHumor/model';
 type StampOfHumorResponse = {
   _id: string;
   freetId: string;
-  freetContent: string;
+  //freetContent: string;
   isSatire: boolean;
 };
 
@@ -29,7 +29,7 @@ const constructStampOfHumorResponse = (stampOfHumor: HydratedDocument<StampOfHum
     ...stampOfHumorCopy,
     _id: stampOfHumorCopy._id.toString(),
     freetId: _id.toString(),
-    freetContent: content,
+    //freetContent: content,
   };
 };
 

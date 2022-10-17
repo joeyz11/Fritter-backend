@@ -39,7 +39,15 @@ router.get(
     }
 
     const allFreets = await FreetCollection.findAll();
-    const response = allFreets.map(freetUtil.constructFreetResponse);
+
+    const response = await Promise.all(allFreets.map(async (freet) => {
+      const stampOfHumor = await StampOfHumorCollection.findOne(freet._id.toString())
+      return ({
+        freet: freetUtil.constructFreetResponse(freet),
+        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
+      })
+    }));
+
     res.status(200).json(response);
   },
   [
@@ -47,7 +55,13 @@ router.get(
   ],
   async (req: Request, res: Response) => {
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
-    const response = authorFreets.map(freetUtil.constructFreetResponse);
+    const response = await Promise.all(authorFreets.map(async (freet) => {
+      const stampOfHumor = await StampOfHumorCollection.findOne(freet._id.toString())
+      return ({
+        freet: freetUtil.constructFreetResponse(freet),
+        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
+      })
+    }));
     res.status(200).json(response);
   }
 );
@@ -71,8 +85,6 @@ router.post(
     stampOfHumorValidator.isValidStampOfHumor
   ],
   async (req: Request, res: Response) => {
-    console.log('freet router', req.body)
-
     // create freet
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     const freet = await FreetCollection.addOne(userId, req.body.content);
@@ -81,10 +93,9 @@ router.post(
     // create stamp of humor
     const isSatire = req.body.satire === 'true' ? true : false;
     const stampOfHumor = await StampOfHumorCollection.addOne(freetId, isSatire);
-    console.log('stamp of humor', stampOfHumor)
 
     res.status(201).json({
-      message: 'Your freet was created successfully.',
+      message: 'Your freet and stampOfHumor was created successfully.',
       freet: freetUtil.constructFreetResponse(freet),
       stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
     });
@@ -106,12 +117,18 @@ router.delete(
   [
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
-    freetValidator.isValidFreetModifier
+    stampOfHumorValidator.isStampOfHumorExists,
+    freetValidator.isValidFreetModifier,
+    stampOfHumorValidator.isValidStampOfHumorModifier,
   ],
   async (req: Request, res: Response) => {
+    const stampOfHumor = await StampOfHumorCollection.findOne(req.params.freetId)
+    const stampOfHumorId = stampOfHumor._id;
+    await StampOfHumorCollection.deleteOne(stampOfHumorId);
     await FreetCollection.deleteOne(req.params.freetId);
+
     res.status(200).json({
-      message: 'Your freet was deleted successfully.'
+      message: 'Your freet and stampOfHumor was deleted successfully.'
     });
   }
 );
@@ -134,18 +151,26 @@ router.put(
   [
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
+    stampOfHumorValidator.isStampOfHumorExists,
     freetValidator.isValidFreetModifier,
+    stampOfHumorValidator.isValidStampOfHumorModifier,
     freetValidator.isValidFreetContent,
     stampOfHumorValidator.isValidStampOfHumor
   ],
   async (req: Request, res: Response) => {
-    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content);
+    const freetId = req.params.freetId
+    const content = req.body.content
+    const isSatire = req.body.satire === 'true' ? true : false;
 
-    // find stampOfHumorId for freetId
+    const freet = await FreetCollection.updateOne(freetId, content);
+
+    const stampOfHumor = await StampOfHumorCollection.findOne(freetId)
+    const newStampOfHumor = await StampOfHumorCollection.updateOne(stampOfHumor._id, isSatire)
 
     res.status(200).json({
       message: 'Your freet was updated successfully.',
-      freet: freetUtil.constructFreetResponse(freet)
+      freet: freetUtil.constructFreetResponse(freet),
+      stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(newStampOfHumor)
     });
   }
 );

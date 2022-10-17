@@ -12,6 +12,11 @@ type FreetResponse = {
   dateModified: string;
 };
 
+// type FreetAndStampOfHumorResponse = {
+//   freet: Object;
+//   stampOfHumor: Object;
+// }
+
 /**
  * Encode a date as an unambiguous string
  *
@@ -67,5 +72,5 @@ const constructFreetResponse = (freet: HydratedDocument<Freet>): FreetResponse =
 
 export {
   constructFreetResponse,
-  //constructFreetAndStampOfHumorResponse
+  // constructFreetAndStampOfHumorResponse
 };

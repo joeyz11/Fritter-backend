@@ -7,8 +7,8 @@ import FreetCollection from '../freet/collection';
  * Checks if a freet with freetId is req.params exists
  */
 const isStampOfHumorExists = async (req: Request, res: Response, next: NextFunction) => {
-  const validFormat = Types.ObjectId.isValid(req.params.stampOfHumorId);
-  const stampOfHumor = validFormat ? await StampOfHumorCollection.findOne(req.params.stampOfHumorId) : '';
+  const validFormat = Types.ObjectId.isValid(req.params.freetId);  
+  const stampOfHumor = validFormat ? await StampOfHumorCollection.findOne(req.params.freetId) : '';
   if (!stampOfHumor) {
     res.status(404).json({
       error: {
@@ -38,7 +38,7 @@ const isValidStampOfHumor = (req: Request, res: Response, next: NextFunction) =>
 
 
 const isValidStampOfHumorModifier = async (req: Request, res: Response, next: NextFunction) => {
-  const stampOfHumor = await StampOfHumorCollection.findOne(req.params.stampOfHumorId);
+  const stampOfHumor = await StampOfHumorCollection.findOne(req.params.freetId);
   const freetId = stampOfHumor.freetId._id;
   const freet = await FreetCollection.findOne(freetId);
   const userId = freet.authorId._id;

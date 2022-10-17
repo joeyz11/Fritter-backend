@@ -20,13 +20,13 @@ class StampOfHumorCollection {
   }
 
   /**
-   * Find a stamp of humor by stampOfHumorId
+   * Find a stamp of humor by freetId
    *
-   * @param {string} stampOfHumorId - The id of the stamp of humor to find
-   * @return {Promise<HydratedDocument<StampOfHumor>> | Promise<null> } - The freet with the given freetId, if any
+   * @param {string} freetId - The freetId of the stamp of humor to find
+   * @return {Promise<HydratedDocument<StampOfHumor>> | Promise<null> } - The stampOfHumor with the given freetId, if any
    */
-  static async findOne(stampOfHumorId: Types.ObjectId | string): Promise<HydratedDocument<StampOfHumor>> {
-    return StampOfHumorModel.findOne({_id: stampOfHumorId}).populate('freetId');
+  static async findOne(freetId: Types.ObjectId | string): Promise<HydratedDocument<StampOfHumor>> {
+    return StampOfHumorModel.findOne({freetId: freetId}).populate('freetId');
   }
 
   /**
