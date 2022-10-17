@@ -5,7 +5,8 @@ import type {StampOfHumor, PopulatedStampOfHumor} from '../stampOfHumor/model';
 // Update this if you add a property to the Freet type!
 type StampOfHumorResponse = {
   _id: string;
-  freet: string;
+  freetId: string;
+  freetContent: string;
   isSatire: boolean;
 };
 
@@ -22,12 +23,13 @@ const constructStampOfHumorResponse = (stampOfHumor: HydratedDocument<StampOfHum
       versionKey: false // Cosmetics; prevents returning of __v property
     })
   };
-  const {content} = stampOfHumorCopy.freetId;
-  delete stampOfHumorCopy.freetId;
+  const {_id, content} = stampOfHumorCopy.freetId;
+  console.log()
   return {
     ...stampOfHumorCopy,
     _id: stampOfHumorCopy._id.toString(),
-    freet: content,
+    freetId: _id.toString(),
+    freetContent: content,
   };
 };
 

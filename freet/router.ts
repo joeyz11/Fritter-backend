@@ -3,7 +3,11 @@ import express from 'express';
 import FreetCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
-import * as util from './util';
+import * as stampOfHumorValidator from '../stampOfHumor/middleware';
+import * as freetUtil from '../freet/util';
+import * as stampOfHumorUtil from '../stampOfHumor/util';
+
+import StampOfHumorCollection from '../stampOfHumor/collection';
 
 const router = express.Router();
 
@@ -35,7 +39,7 @@ router.get(
     }
 
     const allFreets = await FreetCollection.findAll();
-    const response = allFreets.map(util.constructFreetResponse);
+    const response = allFreets.map(freetUtil.constructFreetResponse);
     res.status(200).json(response);
   },
   [
@@ -43,7 +47,7 @@ router.get(
   ],
   async (req: Request, res: Response) => {
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
-    const response = authorFreets.map(util.constructFreetResponse);
+    const response = authorFreets.map(freetUtil.constructFreetResponse);
     res.status(200).json(response);
   }
 );
@@ -63,15 +67,26 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isValidFreetContent
+    freetValidator.isValidFreetContent,
+    stampOfHumorValidator.isValidStampOfHumor
   ],
   async (req: Request, res: Response) => {
+    console.log('freet router', req.body)
+
+    // create freet
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     const freet = await FreetCollection.addOne(userId, req.body.content);
+    const freetId = freet._id
+
+    // create stamp of humor
+    const isSatire = req.body.satire === 'true' ? true : false;
+    const stampOfHumor = await StampOfHumorCollection.addOne(freetId, isSatire);
+    console.log('stamp of humor', stampOfHumor)
 
     res.status(201).json({
       message: 'Your freet was created successfully.',
-      freet: util.constructFreetResponse(freet)
+      freet: freetUtil.constructFreetResponse(freet),
+      stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
     });
   }
 );
@@ -120,13 +135,17 @@ router.put(
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
     freetValidator.isValidFreetModifier,
-    freetValidator.isValidFreetContent
+    freetValidator.isValidFreetContent,
+    stampOfHumorValidator.isValidStampOfHumor
   ],
   async (req: Request, res: Response) => {
     const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content);
+
+    // find stampOfHumorId for freetId
+
     res.status(200).json({
       message: 'Your freet was updated successfully.',
-      freet: util.constructFreetResponse(freet)
+      freet: freetUtil.constructFreetResponse(freet)
     });
   }
 );
