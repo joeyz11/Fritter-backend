@@ -40,13 +40,6 @@ const isValidFreetContent = (req: Request, res: Response, next: NextFunction) =>
     });
     return;
   }
-  // console.log(satire)
-  // if (satire === undefined) {
-  //   res.status(400).json({
-  //     error: 'Must select value for satire.'
-  //   });
-  //   return;
-  // }
 
   next();
 };

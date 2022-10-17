@@ -36,10 +36,11 @@ const formsAndHandlers = {
     "sign-out": signOut,
     "view-all-freets": viewAllFreets,
     "view-freets-by-author": viewFreetsByAuthor,
-    "create-freet": createFreet,
+    // "create-freet": createFreet,
     "edit-freet": editFreet,
     "delete-freet": deleteFreet,
-    "create-stamp-of-humor": createStampOfHumor,
+    // "create-stamp-of-humor": createStampOfHumor,
+    "create-freet-and-stamp-of-humor": createFreetAndStampOfHumor,
 };
 
 // Attach handlers to forms

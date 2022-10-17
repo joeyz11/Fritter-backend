@@ -26,7 +26,6 @@ router.post(
     stampOfHumorValidator.isValidStampOfHumor
   ],
   async (req: Request, res: Response) => {
-    console.log(req.body)
 
     const freetId = (req.body.freetId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     const isSatire = req.body.satire === 'true' ? true : false;
