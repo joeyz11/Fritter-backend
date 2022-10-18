@@ -313,3 +313,132 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
+
+
+#### `GET /api/diversify/:userId` - Get new and diversified freets to be poopulated
+
+**Returns**
+
+- A success message
+- A list of new freets
+
+**Throws**
+
+- `403` if the user is not logged in
+
+
+#### `DELETE /api/diversify/:userId` - Remove diversified freets
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+
+#### `GET /api/discussions/:freetId` - Get discussions of freet
+
+**Returns**
+
+- A success message
+- A list of replies to the freet
+
+**Throws**
+
+- `404` if the freetIf is invalid
+
+#### `POST /api/discussions/:freetId` - Create new discussions for freet
+
+**Returns**
+
+- A success message
+- An object with the created discussion
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId is invalid
+
+#### `PUT /api/discussions/:freetId` - Update an existing discussion
+
+**Body**
+
+- `content` _{string}_ - The content of the freet reply
+- `satire` _{string}_ - Whether the freet reply is satirical or not
+
+**Returns**
+
+- A success message
+- An object with the updated discussion
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId or stampOfHumorId is invalid
+- `400` if the new freet content is empty or a stream of empty spaces, or if satire field is undefined
+- `413` if the new freet content is more than 140 characters long
+
+#### `DELETE /api/discussions/:freetId` - Remove discussion
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId is invalid
+
+#### `GET /api/upvotes/:freetId` - Get upvote of freet
+
+**Returns**
+
+- A success message
+- The upvote value to the freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId is invalid
+
+#### `POST /api/upvotes/:freetId` - Create new upvote for freet
+
+**Returns**
+
+- A success message
+- An object with the created upvote
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId is invalid
+
+#### `PUT /api/upvotes/:freetId` - Update an existing upvote
+
+**Body**
+
+- `upvoterId` _{string}_ - The Id of the upvoter
+- `inc` or `dec` _{string}_ - Whether the upvote was positive or negative
+
+**Returns**
+
+- A success message
+- An object with the updated upvote
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the freetId is invalid
+
+#### `DELETE /api/upvotes/:freetId` - Remove upvote
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `403` if the user is not the author of the freet
+- `404` if the freetId is invalid
