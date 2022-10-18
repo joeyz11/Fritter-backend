@@ -4,7 +4,7 @@ import StampOfHumorCollection from '../stampOfHumor/collection';
 import FreetCollection from '../freet/collection';
 
 /**
- * Checks if a freet with freetId is req.params exists
+ * Checks if a stampOfHumor with stampOfHumorId exists
  */
 const isStampOfHumorExists = async (req: Request, res: Response, next: NextFunction) => {
   const validFormat = Types.ObjectId.isValid(req.params.freetId);  
@@ -12,7 +12,7 @@ const isStampOfHumorExists = async (req: Request, res: Response, next: NextFunct
   if (!stampOfHumor) {
     res.status(404).json({
       error: {
-        stampOfHumorNotFound: `Stamp Of Humor with ID ${req.params.stampOfHumorId} does not exist.`
+        stampOfHumorNotFound: `Stamp Of Humor with associated freetId ${req.params.freetId} does not exist.`
       }
     });
     return;
@@ -22,13 +22,13 @@ const isStampOfHumorExists = async (req: Request, res: Response, next: NextFunct
 };
 
 /**
- * Checks if the content of the freet in req.body is valid, i.e not a stream of empty
+ * Checks if the satire is not undefined
  * spaces and not more than 140 characters
  */
 const isValidStampOfHumor = (req: Request, res: Response, next: NextFunction) => {
   if (req.body.satire === undefined) {
     res.status(400).json({
-      error: 'Must select value for Satire.'
+      error: 'Must select value for satire.'
     });
     return;
   }
@@ -36,7 +36,9 @@ const isValidStampOfHumor = (req: Request, res: Response, next: NextFunction) =>
   next();
 };
 
-
+/**
+ * Checks if the current user is the author of the freet whose stampOfHumorId is associated
+ */
 const isValidStampOfHumorModifier = async (req: Request, res: Response, next: NextFunction) => {
   const stampOfHumor = await StampOfHumorCollection.findOne(req.params.freetId);
   const freetId = stampOfHumor.freetId._id;

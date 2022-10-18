@@ -2,7 +2,6 @@ import type {Types, PopulatedDoc, Document} from 'mongoose';
 import {Schema, model} from 'mongoose';
 import type {Freet} from '../freet/model';
 
-
 export type StampOfHumor = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   freetId: Types.ObjectId;
@@ -16,7 +15,6 @@ export type PopulatedStampOfHumor = {
 };
 
 const StampOfHumorSchema = new Schema<StampOfHumor>({
-  // The author userId
   freetId: {
     type: Schema.Types.ObjectId,
     required: true,

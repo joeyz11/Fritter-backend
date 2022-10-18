@@ -1,7 +1,6 @@
 import type {HydratedDocument} from 'mongoose';
 import moment from 'moment';
 import type {Freet, PopulatedFreet} from '../freet/model';
-import { StampOfHumor, PopulatedStampOfHumor } from '../stampOfHumor/model';
 
 // Update this if you add a property to the Freet type!
 type FreetResponse = {
@@ -11,11 +10,6 @@ type FreetResponse = {
   content: string;
   dateModified: string;
 };
-
-// type FreetAndStampOfHumorResponse = {
-//   freet: Object;
-//   stampOfHumor: Object;
-// }
 
 /**
  * Encode a date as an unambiguous string
@@ -49,28 +43,6 @@ const constructFreetResponse = (freet: HydratedDocument<Freet>): FreetResponse =
   };
 };
 
-// const constructFreetAndStampOfHumorResponse = (freet: HydratedDocument<Freet>, stampOfHumor: HydratedDocument<StampOfHumor>): FreetAndStampOfHumorResponse => {
-//   const freetCopy: PopulatedFreet = {
-//     ...freet.toObject({
-//       versionKey: false // Cosmetics; prevents returning of __v property
-//     })
-//   };
-//   const {username} = freetCopy.authorId;
-//   delete freetCopy.authorId;
-
-//   const stampOfHumorCopy: PopulatedStampOfHumor = {
-//     ...stampOfHumor.toObject({
-//       versionKey: false
-//     })
-//   };
-
-//   return {
-//     freet: freetCopy,
-//     stampOfHumor: stampOfHumorCopy
-//   };
-// };
-
 export {
   constructFreetResponse,
-  // constructFreetAndStampOfHumorResponse
 };

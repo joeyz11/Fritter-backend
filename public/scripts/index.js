@@ -39,8 +39,6 @@ const formsAndHandlers = {
     "create-freet": createFreet,
     "edit-freet": editFreet,
     "delete-freet": deleteFreet,
-    // "create-stamp-of-humor": createStampOfHumor,
-    //"create-freet-and-stamp-of-humor": createFreetAndStampOfHumor,
 };
 
 // Attach handlers to forms

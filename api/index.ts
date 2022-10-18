@@ -11,8 +11,6 @@ import dotenv from 'dotenv';
 import * as userValidator from '../user/middleware';
 import {userRouter} from '../user/router';
 import {freetRouter} from '../freet/router';
-import { stampOfHumorRouter } from '../stampOfHumor/router';
-//import { syncRouter } from '../sync/router';
 
 // Load environmental variables
 dotenv.config({});
@@ -78,8 +76,6 @@ app.get('/', (req: Request, res: Response) => {
 // Add routers from routes folder
 app.use('/api/users', userRouter);
 app.use('/api/freets', freetRouter);
-app.use('/api/stampOfHumor', stampOfHumorRouter);
-//app.use('/api/sync', syncRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

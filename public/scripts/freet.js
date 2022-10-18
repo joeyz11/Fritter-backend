@@ -16,7 +16,6 @@ function viewFreetsByAuthor(fields) {
 }
 
 function createFreet(fields) {
-    //console.log("createfreet", fields);
     fetch("/api/freets", {
         method: "POST",
         body: JSON.stringify(fields),

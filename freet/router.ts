@@ -16,15 +16,15 @@ const router = express.Router();
  *
  * @name GET /api/freets
  *
- * @return {FreetResponse[]} - A list of all the freets sorted in descending
+ * @return {FreetAndStampOfHumorResponse[]} - A list of all the freets and stampOfHumors sorted in descending
  *                      order by date modified
  */
 /**
- * Get freets by author.
+ * Get freets and stampOfHumors by author.
  *
  * @name GET /api/freets?authorId=id
  *
- * @return {FreetResponse[]} - An array of freets created by user with id, authorId
+ * @return {FreetAndStampOfHumorResponse[]} - An array of freets and stampOfHumors created by user with id, authorId
  * @throws {400} - If authorId is not given
  * @throws {404} - If no user has given authorId
  *
@@ -37,17 +37,14 @@ router.get(
       next();
       return;
     }
-
     const allFreets = await FreetCollection.findAll();
-
     const response = await Promise.all(allFreets.map(async (freet) => {
       const stampOfHumor = await StampOfHumorCollection.findOne(freet._id.toString())
       return ({
         freet: freetUtil.constructFreetResponse(freet),
-        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
+        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
       })
     }));
-
     res.status(200).json(response);
   },
   [
@@ -59,7 +56,7 @@ router.get(
       const stampOfHumor = await StampOfHumorCollection.findOne(freet._id.toString())
       return ({
         freet: freetUtil.constructFreetResponse(freet),
-        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
+        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
       })
     }));
     res.status(200).json(response);
@@ -67,14 +64,15 @@ router.get(
 );
 
 /**
- * Create a new freet.
+ * Create a new freet and associated stampOfHumors.
  *
  * @name POST /api/freets
  *
  * @param {string} content - The content of the freet
- * @return {FreetResponse} - The created freet
+ * @param {string} satire - Whether the freet is satircal or not
+ * @return {FreetResponse, StampOfHumorResponse} - The created freet
  * @throws {403} - If the user is not logged in
- * @throws {400} - If the freet content is empty or a stream of empty spaces
+ * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
  * @throws {413} - If the freet content is more than 140 characters long
  */
 router.post(
@@ -89,11 +87,9 @@ router.post(
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     const freet = await FreetCollection.addOne(userId, req.body.content);
     const freetId = freet._id
-
     // create stamp of humor
     const isSatire = req.body.satire === 'true' ? true : false;
     const stampOfHumor = await StampOfHumorCollection.addOne(freetId, isSatire);
-
     res.status(201).json({
       message: 'Your freet and stampOfHumor was created successfully.',
       freet: freetUtil.constructFreetResponse(freet),
@@ -103,14 +99,14 @@ router.post(
 );
 
 /**
- * Delete a freet
+ * Delete a freet and associated stampOfHumor
  *
  * @name DELETE /api/freets/:id
  *
  * @return {string} - A success message
- * @throws {403} - If the user is not logged in or is not the author of
- *                 the freet
- * @throws {404} - If the freetId is not valid
+ * @throws {403} - If the user is not logged in, or is not the author of
+ *                 the freet or stampOfHumor
+ * @throws {404} - If the freetId or stampOfHumorId is not valid
  */
 router.delete(
   '/:freetId?',
@@ -134,16 +130,17 @@ router.delete(
 );
 
 /**
- * Modify a freet
+ * Modify a freet and associated stampOfHumor
  *
  * @name PUT /api/freets/:id
  *
  * @param {string} content - the new content for the freet
- * @return {FreetResponse} - the updated freet
+ * @param {string} satire - whether the new freet is satirical or not
+ * @return {FreetResponse,StampOfHumorResponse} - the updated freet and stampOfHumor
  * @throws {403} - if the user is not logged in or not the author of
- *                 of the freet
- * @throws {404} - If the freetId is not valid
- * @throws {400} - If the freet content is empty or a stream of empty spaces
+ *                 of the freet or stampOfHumor
+ * @throws {404} - If the freetId os stampOfHumorId is not valid
+ * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
  * @throws {413} - If the freet content is more than 140 characters long
  */
 router.put(
@@ -161,12 +158,9 @@ router.put(
     const freetId = req.params.freetId
     const content = req.body.content
     const isSatire = req.body.satire === 'true' ? true : false;
-
     const freet = await FreetCollection.updateOne(freetId, content);
-
     const stampOfHumor = await StampOfHumorCollection.findOne(freetId)
     const newStampOfHumor = await StampOfHumorCollection.updateOne(stampOfHumor._id, isSatire)
-
     res.status(200).json({
       message: 'Your freet was updated successfully.',
       freet: freetUtil.constructFreetResponse(freet),

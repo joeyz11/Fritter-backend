@@ -4,11 +4,11 @@ import StampOfHumorModel from './model';
 
 class StampOfHumorCollection {
   /**
-   * Add a stamp of humor to the collection
+   * Add a stampOfHumor to the collection
    *
-   * @param {string} freetId - The id of the freet of the stamp of humor
-   * @param {boolean} isSatire
-   * @return {Promise<HydratedDocument<StampOfHumor>>} - The newly created freet
+   * @param {string} freetId - The freetId of the stamp of humor
+   * @param {boolean} isSatire - Whether this freet is satirical or not
+   * @return {Promise<HydratedDocument<StampOfHumor>>} - The newly created stampOfHumor
    */
   static async addOne(freetId: Types.ObjectId | string, isSatire: boolean): Promise<HydratedDocument<StampOfHumor>> {
     const stampOfHumor = new StampOfHumorModel({
@@ -20,7 +20,7 @@ class StampOfHumorCollection {
   }
 
   /**
-   * Find a stamp of humor by freetId
+   * Find a stampOfHumor by freetId
    *
    * @param {string} freetId - The freetId of the stamp of humor to find
    * @return {Promise<HydratedDocument<StampOfHumor>> | Promise<null> } - The stampOfHumor with the given freetId, if any
@@ -30,7 +30,7 @@ class StampOfHumorCollection {
   }
 
   /**
-   * Get all the freets in the database
+   * Get all the stampOfHumors in the database
    *
    * @return {Promise<HydratedDocument<StampOfHumor>[]>} - An array of all of the freets
    */
@@ -39,13 +39,12 @@ class StampOfHumorCollection {
     return StampOfHumorModel.find({}).populate('freetId');
   }
 
-
   /**
-   * Update a freet with the new content
+   * Update a stampOfHumor
    *
-   * @param {string} stampOfHumorId - The id of the freet to be updated
-   * @param {boolean} isSatire - The new content of the freet
-   * @return {Promise<HydratedDocument<StampOfHumor>>} - The newly updated freet
+   * @param {string} stampOfHumorId - The id of the stampOfHumor to be updated
+   * @param {boolean} isSatire - Whether the new freet is satical or not
+   * @return {Promise<HydratedDocument<StampOfHumor>>} - The newly updated stampOfHumor
    */
   static async updateOne(stampOfHumorId: Types.ObjectId | string, isSatire: boolean): Promise<HydratedDocument<StampOfHumor>> {
     const stampOfHumor = await StampOfHumorModel.findOne({_id: stampOfHumorId});
@@ -55,10 +54,10 @@ class StampOfHumorCollection {
   }
 
   /**
-   * Delete a freet with given freetId.
+   * Delete a stampOfHumor with given stampOfHumorId.
    *
-   * @param {string} stampOfHumorId - The stampOfHumorId of stamp of humor to delete
-   * @return {Promise<Boolean>} - true if the stamp of humor has been deleted, false otherwise
+   * @param {string} stampOfHumorId - The stampOfHumorId of stampOfHumor to delete
+   * @return {Promise<Boolean>} - true if the stampOfHumor has been deleted, false otherwise
    */
   static async deleteOne(stampOfHumorId: Types.ObjectId | string): Promise<boolean> {
     const stampOfHumor = await StampOfHumorModel.deleteOne({_id: stampOfHumorId});
