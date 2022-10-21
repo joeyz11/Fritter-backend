@@ -39,6 +39,8 @@ const formsAndHandlers = {
     "create-freet": createFreet,
     "edit-freet": editFreet,
     "delete-freet": deleteFreet,
+    // "diversify-on": createDiversify,
+    // "diversify-off": removeDiversify,
 };
 
 // Attach handlers to forms

@@ -4,12 +4,20 @@ import FreetCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as stampOfHumorValidator from '../stampOfHumor/middleware';
+import * as discussionValidator from '../discussion/middleware'
 import * as freetUtil from '../freet/util';
 import * as stampOfHumorUtil from '../stampOfHumor/util';
+import * as discussionUtil from '../discussion/util';
 
 import StampOfHumorCollection from '../stampOfHumor/collection';
+import DiscussionCollection from '../discussion/collection';
 
 const router = express.Router();
+enum Sentiment {
+  Support = 'support',
+  Neutral = 'neutral',
+  Oppose = 'oppose'
+}
 
 /**
  * Get all the freets
@@ -20,11 +28,11 @@ const router = express.Router();
  *                      order by date modified
  */
 /**
- * Get freets and stampOfHumors by author.
+ * Get freets, stampOfHumors, and discussions by author.
  *
  * @name GET /api/freets?authorId=id
  *
- * @return {FreetAndStampOfHumorResponse[]} - An array of freets and stampOfHumors created by user with id, authorId
+ * @return {FreetAndStampOfHumorResponseAndDiscussions[]} - An array of freets, stampOfHumors, and associated discussions created by user with id, authorId
  * @throws {400} - If authorId is not given
  * @throws {404} - If no user has given authorId
  *
@@ -39,10 +47,19 @@ router.get(
     }
     const allFreets = await FreetCollection.findAll();
     const response = await Promise.all(allFreets.map(async (freet) => {
-      const stampOfHumor = await StampOfHumorCollection.findOne(freet._id.toString())
+      const freetId = freet._id.toString();
+      const stampOfHumor = await StampOfHumorCollection.findOne(freetId);
+
+      const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
+      const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
+      const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
+
       return ({
         freet: freetUtil.constructFreetResponse(freet),
         stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
+        supportDiscussion: discussionUtil.constructDiscussionResponse(supportDiscussion),
+        neutralDiscussion: discussionUtil.constructDiscussionResponse(neutralDiscussion),
+        opposeDiscussion: discussionUtil.constructDiscussionResponse(opposeDiscussion),
       })
     }));
     res.status(200).json(response);
@@ -53,10 +70,19 @@ router.get(
   async (req: Request, res: Response) => {
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
     const response = await Promise.all(authorFreets.map(async (freet) => {
-      const stampOfHumor = await StampOfHumorCollection.findOne(freet._id.toString())
+      const freetId = freet._id.toString();
+      const stampOfHumor = await StampOfHumorCollection.findOne(freetId);
+
+      const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
+      const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
+      const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
+
       return ({
         freet: freetUtil.constructFreetResponse(freet),
         stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
+        supportDiscussion: discussionUtil.constructDiscussionResponse(supportDiscussion),
+        neutralDiscussion: discussionUtil.constructDiscussionResponse(neutralDiscussion),
+        opposeDiscussion: discussionUtil.constructDiscussionResponse(opposeDiscussion),
       })
     }));
     res.status(200).json(response);
@@ -64,13 +90,13 @@ router.get(
 );
 
 /**
- * Create a new freet and associated stampOfHumors.
+ * Create a new freet, associated stampOfHumors, and associated discussions.
  *
  * @name POST /api/freets
  *
  * @param {string} content - The content of the freet
  * @param {string} satire - Whether the freet is satircal or not
- * @return {FreetResponse, StampOfHumorResponse} - The created freet
+ * @return {FreetResponse, StampOfHumorResponse, DiscussionResponse} - The created freet
  * @throws {403} - If the user is not logged in
  * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
  * @throws {413} - If the freet content is more than 140 characters long
@@ -90,23 +116,31 @@ router.post(
     // create stamp of humor
     const isSatire = req.body.satire === 'true' ? true : false;
     const stampOfHumor = await StampOfHumorCollection.addOne(freetId, isSatire);
+    // create 'support', 'neutral', 'oppose' discussions
+    const supportDiscussion = await DiscussionCollection.addOne(freetId, Sentiment.Support);
+    const neutralDiscussion = await DiscussionCollection.addOne(freetId, Sentiment.Neutral);
+    const opposeDiscussion = await DiscussionCollection.addOne(freetId, Sentiment.Oppose);
+
     res.status(201).json({
       message: 'Your freet and stampOfHumor was created successfully.',
       freet: freetUtil.constructFreetResponse(freet),
-      stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor)
+      stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
+      supportDiscussion: discussionUtil.constructDiscussionResponse(supportDiscussion),
+      neutralDiscussion: discussionUtil.constructDiscussionResponse(neutralDiscussion),
+      opposeDiscussion: discussionUtil.constructDiscussionResponse(opposeDiscussion),
     });
   }
 );
 
 /**
- * Delete a freet and associated stampOfHumor
+ * Delete a freet, associated stampOfHumor, and associated discussions
  *
  * @name DELETE /api/freets/:id
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in, or is not the author of
  *                 the freet or stampOfHumor
- * @throws {404} - If the freetId or stampOfHumorId is not valid
+ * @throws {404} - If the freetId, stampOfHumorId, or any discussionIds are not valid
  */
 router.delete(
   '/:freetId?',
@@ -114,17 +148,32 @@ router.delete(
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
     stampOfHumorValidator.isStampOfHumorExists,
+    discussionValidator.isDiscussionsExists,
     freetValidator.isValidFreetModifier,
     stampOfHumorValidator.isValidStampOfHumorModifier,
+    discussionValidator.isValidDiscussionDeleter,
   ],
   async (req: Request, res: Response) => {
-    const stampOfHumor = await StampOfHumorCollection.findOne(req.params.freetId)
+    const freetId = req.params.freetId 
+    // delete discussions
+    const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
+    const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
+    const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
+    const supportDiscussionId = supportDiscussion._id;
+    const neutralDiscussionId = neutralDiscussion._id;
+    const opposeDiscussionId = opposeDiscussion._id;
+    await DiscussionCollection.deleteOne(supportDiscussionId);
+    await DiscussionCollection.deleteOne(neutralDiscussionId);
+    await DiscussionCollection.deleteOne(opposeDiscussionId);
+    // delete stamp of humor
+    const stampOfHumor = await StampOfHumorCollection.findOne(freetId)
     const stampOfHumorId = stampOfHumor._id;
     await StampOfHumorCollection.deleteOne(stampOfHumorId);
-    await FreetCollection.deleteOne(req.params.freetId);
+    // delete freet
+    await FreetCollection.deleteOne(freetId);
 
     res.status(200).json({
-      message: 'Your freet and stampOfHumor was deleted successfully.'
+      message: 'Your freet, stampOfHumor, and discussions were deleted successfully.'
     });
   }
 );
@@ -136,7 +185,7 @@ router.delete(
  *
  * @param {string} content - the new content for the freet
  * @param {string} satire - whether the new freet is satirical or not
- * @return {FreetResponse,StampOfHumorResponse} - the updated freet and stampOfHumor
+ * @return {FreetResponse, StampOfHumorResponse, DiscussionResponse} - the updated freet, stampOfHumor, and discussions
  * @throws {403} - if the user is not logged in or not the author of
  *                 of the freet or stampOfHumor
  * @throws {404} - If the freetId os stampOfHumorId is not valid
@@ -161,10 +210,17 @@ router.put(
     const freet = await FreetCollection.updateOne(freetId, content);
     const stampOfHumor = await StampOfHumorCollection.findOne(freetId)
     const newStampOfHumor = await StampOfHumorCollection.updateOne(stampOfHumor._id, isSatire)
+    // get discussions
+    const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
+    const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
+    const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
     res.status(200).json({
       message: 'Your freet was updated successfully.',
       freet: freetUtil.constructFreetResponse(freet),
-      stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(newStampOfHumor)
+      stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(newStampOfHumor),
+      supportDiscussion: discussionUtil.constructDiscussionResponse(supportDiscussion),
+      neutralDiscussion: discussionUtil.constructDiscussionResponse(neutralDiscussion),
+      opposeDiscussion: discussionUtil.constructDiscussionResponse(opposeDiscussion),
     });
   }
 );
