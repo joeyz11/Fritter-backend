@@ -3,7 +3,7 @@ import {Types} from 'mongoose';
 import FreetCollection from '../freet/collection';
 
 /**
- * Checks if a freet with freetId is req.params exists
+ * Checks if a freet with freetId in req.params exists
  */
 const isFreetExists = async (req: Request, res: Response, next: NextFunction) => {
   const validFormat = Types.ObjectId.isValid(req.params.freetId);
@@ -25,8 +25,8 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
  * spaces and not more than 140 characters
  */
 const isValidFreetContent = (req: Request, res: Response, next: NextFunction) => {
+
   const {content} = req.body as {content: string};
-  const satire = req.body.satire;
   if (!content.trim()) {
     res.status(400).json({
       error: 'Freet content must be at least one character long.'

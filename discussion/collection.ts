@@ -1,4 +1,5 @@
 import type {HydratedDocument, Types} from 'mongoose';
+import ReplyModel from 'reply/model';
 import type {Discussion} from './model';
 import DiscussionModel from './model';
 
@@ -28,6 +29,16 @@ class DiscussionCollection {
   static async findOne(freetId: Types.ObjectId | string, sentiment: string): Promise<HydratedDocument<Discussion>> {
     return DiscussionModel.findOne({freetId: freetId, sentiment: sentiment}).populate('freetId');
   }
+
+  /**
+   * Find a stampOfHumor by freetId
+   *
+   * @param {string} discussionId - The freetId of the stamp of humor to find
+   * @return {Promise<HydratedDocument<Discussion>> | Promise<null> } - The stampOfHumor with the given freetId, if any
+   */
+    static async findOneById(discussionId: Types.ObjectId | string): Promise<HydratedDocument<Discussion>> {
+      return DiscussionModel.findOne({_id: discussionId}).populate('freetId');
+    }
 
   /**
    * Get all the stampOfHumors in the database

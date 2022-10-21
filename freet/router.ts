@@ -4,13 +4,14 @@ import FreetCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as stampOfHumorValidator from '../stampOfHumor/middleware';
-import * as discussionValidator from '../discussion/middleware'
+import * as discussionValidator from '../discussion/middleware';
 import * as freetUtil from '../freet/util';
 import * as stampOfHumorUtil from '../stampOfHumor/util';
 import * as discussionUtil from '../discussion/util';
 
 import StampOfHumorCollection from '../stampOfHumor/collection';
 import DiscussionCollection from '../discussion/collection';
+import ReplyCollection from '../reply/collection';
 
 const router = express.Router();
 enum Sentiment {
@@ -148,20 +149,24 @@ router.delete(
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
     stampOfHumorValidator.isStampOfHumorExists,
-    discussionValidator.isDiscussionsExists,
+    discussionValidator.isDiscussionsByFreetExists,
     freetValidator.isValidFreetModifier,
     stampOfHumorValidator.isValidStampOfHumorModifier,
     discussionValidator.isValidDiscussionDeleter,
   ],
   async (req: Request, res: Response) => {
     const freetId = req.params.freetId 
-    // delete discussions
+    // delete all replies
     const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
     const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
     const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
     const supportDiscussionId = supportDiscussion._id;
     const neutralDiscussionId = neutralDiscussion._id;
     const opposeDiscussionId = opposeDiscussion._id;
+    await ReplyCollection.deleteManyByDiscussion(supportDiscussionId)
+    await ReplyCollection.deleteManyByDiscussion(neutralDiscussionId)
+    await ReplyCollection.deleteManyByDiscussion(opposeDiscussionId)
+    // delete discussions
     await DiscussionCollection.deleteOne(supportDiscussionId);
     await DiscussionCollection.deleteOne(neutralDiscussionId);
     await DiscussionCollection.deleteOne(opposeDiscussionId);

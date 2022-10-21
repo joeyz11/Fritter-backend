@@ -41,6 +41,9 @@ const formsAndHandlers = {
     "delete-freet": deleteFreet,
     // "diversify-on": createDiversify,
     // "diversify-off": removeDiversify,
+    "view-all-replies": viewAllReplies,
+    "view-replies-by-author": viewRepliesByAuthor,
+    "create-reply": createReply,
 };
 
 // Attach handlers to forms
