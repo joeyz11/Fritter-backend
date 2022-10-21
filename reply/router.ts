@@ -71,7 +71,7 @@ router.post(
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; 
-    const discussionId = req.body.id;
+    const discussionId = req.params.discussionId;
     const reply = await ReplyCollection.addOne(userId, discussionId, req.body.content);
 
     res.status(201).json({
@@ -81,5 +81,69 @@ router.post(
     });
   }
 );
+
+
+/**
+ * Delete a freet, associated stampOfHumor, and associated discussions
+ *
+ * @name DELETE /api/freets/:id
+ *
+ * @return {string} - A success message
+ * @throws {403} - If the user is not logged in, or is not the author of
+ *                 the freet or stampOfHumor
+ * @throws {404} - If the freetId, stampOfHumorId, or any discussionIds are not valid
+ */
+router.delete(
+  '/:replyId?',
+  [
+    userValidator.isUserLoggedIn,
+    replyValidator.isReplyExists,
+    replyValidator.isValidReplyModifier,
+  ],
+  async (req: Request, res: Response) => {
+    const replyId = req.params.replyId 
+    await ReplyCollection.deleteOne(replyId)
+
+    res.status(200).json({
+      message: 'Your reply was deleted successfully.'
+    });
+  }
+);
+
+
+/**
+ * Modify a reply
+ *
+ * @name PUT /api/replies/:id
+ *
+ * @param {string} content - the new content for the freet
+ * @return {ReplyResponse} - the updated freet, stampOfHumor, and discussions
+ * @throws {403} - if the user is not logged in or not the author of
+ *                 of the freet or stampOfHumor
+ * @throws {404} - If the freetId os stampOfHumorId is not valid
+ * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
+ * @throws {413} - If the freet content is more than 140 characters long
+ */
+router.put(
+  '/:replyId?',
+  [
+    userValidator.isUserLoggedIn,
+    replyValidator.isReplyExists,
+    replyValidator.isValidReplyModifier,
+    replyValidator.isValidReplyContent,
+  ],
+  async (req: Request, res: Response) => {
+    const replyId = req.params.replyId
+    const content = req.body.content
+    const reply = await ReplyCollection.updateOne(replyId, content);
+
+    res.status(200).json({
+      message: 'Your reply was updated successfully.',
+      reply: replyUtil.constructReplyResponse(reply),
+    });
+  }
+);
+
+
 
 export {router as replyRouter};

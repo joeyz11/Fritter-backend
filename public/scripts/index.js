@@ -43,7 +43,10 @@ const formsAndHandlers = {
     // "diversify-off": removeDiversify,
     "view-all-replies": viewAllReplies,
     "view-replies-by-author": viewRepliesByAuthor,
+    "view-replies-by-discussion": viewRepliesByDiscussion,
     "create-reply": createReply,
+    "edit-reply": editReply,
+    "delete-reply": deleteReply,
 };
 
 // Attach handlers to forms

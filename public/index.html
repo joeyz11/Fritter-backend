@@ -163,6 +163,15 @@
         <input type="submit" value="View Replies By Author">
       </form>
 
+      <form id="view-replies-by-discussion">
+        <h3>View Replies By Discussion</h3>
+        <div>
+          <label for="id">Discussion ID:</label>
+          <input id="id" name="id">
+        </div>
+        <input type="submit" value="View Replies By Discussion">
+      </form>
+
         <form id="create-reply">
           <h3>Create Reply</h3>
           <div>
@@ -174,6 +183,28 @@
             <textarea id="content" name="content"></textarea>
           </div>
           <input type="submit" value="Create Reply">
+        </form>
+
+        <form id="edit-reply">
+          <h3>Edit Reply</h3>
+          <div>
+            <label for="id">Reply ID:</label>
+            <input id="id" name="id">
+          </div>
+          <div>
+            <label for="content">Content:</label>
+            <textarea id="content" name="content"></textarea>
+          </div>
+          <input type="submit" value="Edit Reply">
+        </form>
+
+        <form id="delete-reply">
+          <h3>Delete Reply</h3>
+          <div>
+            <label for="id">Reply ID:</label>
+            <input id="id" name="id">
+          </div>
+          <input type="submit" value="Delete Reply">
         </form>
 
       </div>
