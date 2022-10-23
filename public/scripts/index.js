@@ -41,6 +41,8 @@ const formsAndHandlers = {
     "delete-freet": deleteFreet,
     // "diversify-on": createDiversify,
     // "diversify-off": removeDiversify,
+    "view-all-discussions": ViewAllDiscussions,
+    "view-discussions-of-freet": ViewDiscussionsOfFreet,
     "view-all-replies": viewAllReplies,
     "view-replies-by-author": viewRepliesByAuthor,
     "view-replies-by-discussion": viewRepliesByDiscussion,

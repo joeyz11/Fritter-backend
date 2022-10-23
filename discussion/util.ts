@@ -8,11 +8,11 @@ type DiscussionResponse = {
 };
 
 /**
- * Transform a raw StampOfHumor object from the database into an object
+ * Transform a raw Discussion object from the database into an object
  * with all the information needed by the frontend
  *
- * @param {HydratedDocument<Discussion>} stampOfHumor - A stampOfHumor
- * @returns {DiscussionResponse} - The stampOfHumor object formatted for the frontend
+ * @param {HydratedDocument<Discussion>} discussion - A discussion
+ * @returns {DiscussionResponse} - The discussion object formatted for the frontend
  */
 const constructDiscussionResponse = (discussion: HydratedDocument<Discussion>): DiscussionResponse => {
   const discussionCopy: PopulatedDiscussion = {
