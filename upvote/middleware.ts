@@ -27,11 +27,13 @@ const isUpvoteExists = async (req: Request, res: Response, next: NextFunction) =
  */
 const isValidUpvoteModifier = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.session.userId
+  // console.log('ccurent user', userId)
   const replyId = req.params.replyId
   // const reply = await FreetCollection.findOne(replyId);
   const upvote = await UpvoteCollection.findOne(replyId);
 
-  for (const id in upvote.upvoters) {
+  for (const id of upvote.upvoters) {
+    // console.log('invalid users', id)
     if (id.toString() === userId) {
       res.status(403).json({
         error: 'Cannot upvote a reply again.'

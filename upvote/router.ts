@@ -38,12 +38,12 @@ router.put(
     const reply = await ReplyCollection.findOne(replyId);
     const upvote = await UpvoteCollection.findOne(replyId);
     const upvoteId = upvote._id;
-    await UpvoteCollection.updateOne(upvoteId, user, true);
+    const newUpvote = await UpvoteCollection.updateOne(upvoteId, user, true);
 
     res.status(200).json({
       message: 'Your upvote was incremented successfully.',
       reply: replyUtil.constructReplyResponse(reply),
-      upvote: upvoteUtil.constructUpvoteResponse(upvote),
+      upvote: upvoteUtil.constructUpvoteResponse(newUpvote),
     });
   }
 );
@@ -63,6 +63,7 @@ router.put(
     userValidator.isUserLoggedIn,
     replyValidator.isReplyExists,
     upvoteValidator.isUpvoteExists,
+    upvoteValidator.isValidUpvoteModifier
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? '';
@@ -71,12 +72,12 @@ router.put(
     const reply = await ReplyCollection.findOne(replyId);
     const upvote = await UpvoteCollection.findOne(replyId);
     const upvoteId = upvote._id;
-    await UpvoteCollection.updateOne(upvoteId, user, false);
+    const newUpvote = await UpvoteCollection.updateOne(upvoteId, user, false);
 
     res.status(200).json({
       message: 'Your upvote was decremented successfully.',
       reply: replyUtil.constructReplyResponse(reply),
-      upvote: upvoteUtil.constructUpvoteResponse(upvote),
+      upvote: upvoteUtil.constructUpvoteResponse(newUpvote),
     });
   }
 );
