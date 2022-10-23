@@ -28,27 +28,33 @@ function showResponse(response) {
 
 // Map form (by id) to the function that should be called on submit
 const formsAndHandlers = {
+    // User
     "create-user": createUser,
     "delete-user": deleteUser,
     "change-username": changeUsername,
     "change-password": changePassword,
     "sign-in": signIn,
     "sign-out": signOut,
+    // Freet
     "view-all-freets": viewAllFreets,
     "view-freets-by-author": viewFreetsByAuthor,
     "create-freet": createFreet,
     "edit-freet": editFreet,
     "delete-freet": deleteFreet,
+    // Diversify
     // "diversify-on": createDiversify,
     // "diversify-off": removeDiversify,
+    // Discussion
     "view-all-discussions": ViewAllDiscussions,
     "view-discussions-of-freet": ViewDiscussionsOfFreet,
+    // Reply
     "view-all-replies": viewAllReplies,
     "view-replies-by-author": viewRepliesByAuthor,
-    "view-replies-by-discussion": viewRepliesByDiscussion,
+    "view-ordered-replies-by-discussion": viewOrderedRepliesByDiscussion,
     "create-reply": createReply,
     "edit-reply": editReply,
     "delete-reply": deleteReply,
+    // Upvote
     "upvote-reply": upvoteReply,
     "downvote-reply": downvoteReply,
 };

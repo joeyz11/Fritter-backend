@@ -3,7 +3,6 @@ function ViewAllDiscussions(fields) {
 }
 
 function ViewDiscussionsOfFreet(fields) {
-    console.log("fields", fields);
     fetch(`/api/discussions?freetId=${fields.id}`)
         .then(showResponse)
         .catch(showResponse);

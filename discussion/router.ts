@@ -50,9 +50,7 @@ router.get(
     freetValidator.isFreetExists
   ],
   async (req: Request, res: Response) => {
-    console.log('router get', req.query.freetId)
     const freetId = (req.query.freetId as string);
-    console.log(freetId)
     // get 'support', 'neutral', 'oppose' discussions
     const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
     const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);

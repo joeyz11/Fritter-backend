@@ -3,6 +3,7 @@ import UserCollection from 'user/collection';
 import type {Upvote} from './model';
 import type {User} from '../user/model';
 import UpvoteModel from './model';
+import ReplyCollection from '../reply/collection';
 
 class UpvoteCollection {
   /**
@@ -45,7 +46,14 @@ class UpvoteCollection {
    */
   // TODO: fix
   static async findAllByDiscussion(discussionId: Types.ObjectId | string): Promise<Array<HydratedDocument<Upvote>>> {
-    return UpvoteModel.find({"discussionId": discussionId}).populate('replyId');
+    const replies = await ReplyCollection.findAllByDiscussion(discussionId);
+    const upvotes = Promise.all(replies.map((reply) => {
+      const replyId = reply._id;
+      return UpvoteCollection.findOne(replyId)
+    }))
+
+    return upvotes
+    // return UpvoteModel.find({discussionId: discussionId}).populate('replyId');
   }
 
   /**
@@ -59,7 +67,6 @@ class UpvoteCollection {
   static async updateOne(upvoteId: Types.ObjectId | string, upvoter: User, inc: boolean): Promise<HydratedDocument<Upvote>> {
 
     const upvote = await UpvoteModel.findOne({_id: upvoteId});
-    console.log('increment??', inc)
     if (inc) upvote.numUpvote = upvote.numUpvote + 1;
     else upvote.numUpvote = upvote.numUpvote - 1;
     

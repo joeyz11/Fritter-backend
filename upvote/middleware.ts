@@ -7,7 +7,6 @@ import FreetCollection from '../freet/collection';
  * Checks if a upvote with associated replyId exists
  */
 const isUpvoteExists = async (req: Request, res: Response, next: NextFunction) => {
-  console.log('upvote exists?', req.params)
   const validFormat = Types.ObjectId.isValid(req.params.replyId);  
   const upvote = validFormat ? await UpvoteCollection.findOne(req.params.replyId) : '';
   if (!upvote) {

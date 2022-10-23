@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import * as userValidator from '../user/middleware';
 import {userRouter} from '../user/router';
 import {freetRouter} from '../freet/router';
+// import {diversifyRouter} from '../diversify/router';
 import {discussionRouter} from '../discussion/router'
 import {replyRouter} from '../reply/router';
 import {upvoteRouter} from '../upvote/router';
@@ -79,6 +80,7 @@ app.get('/', (req: Request, res: Response) => {
 // Add routers from routes folder
 app.use('/api/users', userRouter);
 app.use('/api/freets', freetRouter);
+// app.use('/api/diversify', diversifyRouter);
 app.use('/api/discussions', discussionRouter)
 app.use('/api/replies', replyRouter);
 app.use('/api/upvotes', upvoteRouter);

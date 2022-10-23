@@ -8,7 +8,7 @@ function viewRepliesByAuthor(fields) {
         .catch(showResponse);
 }
 
-function viewRepliesByDiscussion(fields) {
+function viewOrderedRepliesByDiscussion(fields) {
     fetch(`/api/replies?discussionId=${fields.id}`)
         .then(showResponse)
         .catch(showResponse);

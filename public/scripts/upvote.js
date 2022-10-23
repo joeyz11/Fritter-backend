@@ -1,5 +1,4 @@
 function upvoteReply(fields) {
-    console.log("fetching", fields);
     fetch(`/api/upvotes/${fields.id}/inc`, {
         method: "PUT",
         body: JSON.stringify(fields),

@@ -9,6 +9,9 @@ import * as upvoteUtil from '../upvote/util';
 import ReplyCollection from '../reply/collection';
 import UpvoteCollection from '../upvote/collection';
 
+import type {HydratedDocument, Types} from 'mongoose';
+import type {Upvote} from '../upvote/model';
+
 const router = express.Router();
 
 
@@ -33,13 +36,19 @@ const router = express.Router();
 router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
+    // console.log('req.query', req.query)
+    // console.log('req.params', req.params)
+    // console.log('req.body', req.body)
     // Check if authorId query parameter was supplied
     if (req.query.author !== undefined) {
       next();
       return;
     }
-    const allReplies = await ReplyCollection.findAll();
-    const response = await Promise.all(allReplies.map(async (reply) => {
+    if (req.query.discussionId === undefined) {
+
+      const allReplies = await ReplyCollection.findAll();
+
+      const response = await Promise.all(allReplies.map(async (reply) => {
       const replyId = reply._id.toString();
       const upvote = await UpvoteCollection.findOne(replyId);
 
@@ -47,8 +56,44 @@ router.get(
         reply: replyUtil.constructReplyResponse(reply),
         upvote: upvoteUtil.constructUpvoteResponse(upvote),
       })
-    }));
+      }));
+      res.status(200).json(response);
+      return;
+    }
+
+    const discussionId = (req.query.discussionId as string)
+    const upvotesOfDiscussion = await UpvoteCollection.findAllByDiscussion(discussionId)
+
+    function upvoteBubbleSort(upvotes: Array<HydratedDocument<Upvote>>){
+      //Outer pass
+      for(let i = 0; i < upvotes.length; i++){
+          //Inner pass
+          for(let j = 0; j < upvotes.length - i - 1; j++){
+              //Value comparison using descending order
+              if(upvotes[j + 1].numUpvote > upvotes[j].numUpvote){
+                  //Swapping
+                  [upvotes[j + 1],upvotes[j]] = [upvotes[j],upvotes[j + 1]]
+              }
+          }
+      };
+      return upvotes;
+    };
+
+    const orderedUpvotesOfDiscussion = upvoteBubbleSort(upvotesOfDiscussion);
+
+    const response = await Promise.all(orderedUpvotesOfDiscussion.map(async (upvote) => {
+      const replyId = upvote.replyId;
+      const reply = await ReplyCollection.findOne(replyId);
+
+      return ({
+        reply: replyUtil.constructReplyResponse(reply),
+        upvote: upvoteUtil.constructUpvoteResponse(upvote),
+      }) 
+    }))
+
     res.status(200).json(response);
+
+    
   },
   [
     userValidator.isAuthorExists

@@ -5,11 +5,27 @@ import type {User} from '../user/model';
 export type Diversify = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   userId: Types.ObjectId;
-  diversifiedFreets: string;
+  diversifiedFreets: Types.ObjectId[];
 };
 
-export type PopulatedFreet = {
+export type PopulatedDiversify = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   userId: User;
-  diversifiedFreets: string;
+  diversifiedFreets: Array<string>;
 };
+
+
+const DiversifySchema = new Schema<Diversify>({
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
+  },
+  diversifiedFreets: {
+    type: [Schema.Types.ObjectId],
+    required: true,
+  }
+});
+
+const DiversifyModel = model<Diversify>('Diversify', DiversifySchema);
+export default DiversifyModel;

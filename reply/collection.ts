@@ -58,13 +58,13 @@ class ReplyCollection {
     return ReplyModel.find({authorId: author._id}).populate('authorId');
   }
 
-    /**
+  /**
    * Get all the replies in a given discussion
    *
    * @param {string} discussionId - The username of author of the reply
    * @return {Promise<HydratedDocument<Reply>[]>} - An array of all of the replies
    */
-    static async findAllByDiscussion(discussionId: string): Promise<Array<HydratedDocument<Reply>>> {
+    static async findAllByDiscussion(discussionId: Types.ObjectId | string): Promise<Array<HydratedDocument<Reply>>> {
       const discussion = await DiscussionCollection.findOneById(discussionId);
       return ReplyModel.find({discussionId: discussion._id}).populate('authorId');
     }

@@ -1,6 +1,7 @@
 import { Discussion } from 'discussion/model';
 import type {Types, PopulatedDoc, Document} from 'mongoose';
 import {Schema, model} from 'mongoose';
+import UpvoteCollection from '../upvote/collection';
 import type {User} from '../user/model';
 
 // Type definition for Reply on the backend
@@ -11,6 +12,7 @@ export type Reply = {
   dateCreated: Date;
   content: string;
   dateModified: Date;
+
 };
 
 export type PopulatedReply = {
@@ -20,6 +22,7 @@ export type PopulatedReply = {
   dateCreated: Date;
   content: string;
   dateModified: Date;
+
 };
 
 const ReplySchema = new Schema<Reply>({
@@ -50,8 +53,11 @@ const ReplySchema = new Schema<Reply>({
   dateModified: {
     type: Date,
     required: true
-  }
+  },
 });
+
+
+
 
 const ReplyModel = model<Reply>('Reply', ReplySchema);
 export default ReplyModel;

@@ -29,9 +29,9 @@ router.put(
     upvoteValidator.isValidUpvoteModifier
   ],
   async (req: Request, res: Response) => {
-    console.log('req.query', req.query)
-    console.log('req.body', req.body)
-    console.log('req.params', req.params)
+    // console.log('req.query', req.query)
+    // console.log('req.body', req.body)
+    // console.log('req.params', req.params)
     const userId = (req.session.userId as string) ?? '';
     const user = await UserCollection.findOneByUserId(userId);
     const replyId = req.params.replyId
