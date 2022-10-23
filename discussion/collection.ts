@@ -1,7 +1,9 @@
 import type {HydratedDocument, Types} from 'mongoose';
-import ReplyModel from 'reply/model';
+import ReplyModel from '../reply/model';
+import type {Reply} from '../reply/model';
 import type {Discussion} from './model';
 import DiscussionModel from './model';
+import ReplyCollection from '../reply/collection';
 
 class DiscussionCollection {
   /**
@@ -49,19 +51,38 @@ class DiscussionCollection {
     return DiscussionModel.find({}).populate('freetId');
   }
 
-  // /**
-  //  * Update a stampOfHumor
-  //  *
-  //  * @param {string} stampOfHumorId - The id of the stampOfHumor to be updated
-  //  * @param {boolean} isSatire - Whether the new freet is satical or not
-  //  * @return {Promise<HydratedDocument<StampOfHumor>>} - The newly updated stampOfHumor
-  //  */
-  // static async updateOne(discussionId: Types.ObjectId | string, isSatire: boolean): Promise<HydratedDocument<StampOfHumor>> {
-  //   const discussion = await DiscussionModel.findOne({_id: discussionId});
-  //   stampOfHumor.isSatire = isSatire; 
-  //   await stampOfHumor.save();
-  //   return stampOfHumor.populate('freetId');
-  // }
+  /**
+   * Add a reply to a discussion 
+   *
+   * @param {string} discussionId - The id of the discussion to be updated
+   * @param {Reply} reply - The new reply to be added
+   * @return {Promise<HydratedDocument<Discussion>>} - The newly updated discussion
+   */
+  static async addReplyTo(discussionId: Types.ObjectId | string, reply: Reply): Promise<HydratedDocument<Discussion>> {
+    const discussion = await DiscussionModel.findOne({_id: discussionId});
+    discussion.replies.push(reply._id); 
+    await discussion.save();
+    return discussion.populate('freetId');
+  }
+
+  /**
+   * Delete a reply from a discussion 
+   *
+   * @param {Reply} reply - The reply to be deleted
+   * @return {Promise<HydratedDocument<Discussion>>} - The newly updated discussion
+   */
+  static async deleteReplyFrom(reply: Reply): Promise<HydratedDocument<Discussion>> {
+    const replyId = reply._id
+    const discussionId = reply.discussionId
+    const discussion = await DiscussionCollection.findOneById(discussionId);
+    const newDiscussionReplies = discussion.replies.filter((id) => {
+      id === replyId;
+    });
+
+    discussion.replies = newDiscussionReplies;
+    await discussion.save();
+    return discussion.populate('freetId');
+  }
 
   /**
    * Delete a discussion with given discussionId

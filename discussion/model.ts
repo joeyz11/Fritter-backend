@@ -6,14 +6,14 @@ export type Discussion = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   freetId: Types.ObjectId;
   sentiment: string
-  // replies: Set<Types.ObjectId>;
+  replies: Types.ObjectId[];
 };
 
 export type PopulatedDiscussion = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   freetId: Freet;
   sentiment: string
-  // replies: Set<string>;
+  replies: Array<string>;
 };
 
 const DiscussionSchema = new Schema<Discussion>({
@@ -26,6 +26,10 @@ const DiscussionSchema = new Schema<Discussion>({
     type: String,
     required: true
   },
+  replies: {
+    type: [Schema.Types.ObjectId],
+    required: true,
+  }
 });
 
 const DiscussionModel = model<Discussion>('Discussion', DiscussionSchema);

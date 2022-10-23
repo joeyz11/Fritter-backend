@@ -22,6 +22,7 @@ class ReplyCollection {
       content,
       dateModified: date
     });
+    await DiscussionCollection.addReplyTo(discussionId, reply)
     await reply.save();
     return reply.populate('authorId');
   }
@@ -90,8 +91,11 @@ class ReplyCollection {
    * @return {Promise<Boolean>} - true if the reply has been deleted, false otherwise
    */
   static async deleteOne(replyId: Types.ObjectId | string): Promise<boolean> {
-    const reply = await ReplyModel.deleteOne({_id: replyId});
-    return reply !== null;
+    const reply = await ReplyCollection.findOne(replyId);
+    
+    const response = await ReplyModel.deleteOne({_id: replyId});
+    await DiscussionCollection.deleteReplyFrom(reply)
+    return response !== null;
   }
 
   /**
