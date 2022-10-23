@@ -2,10 +2,12 @@ import type {NextFunction, Request, Response} from 'express';
 import express from 'express';
 import * as userValidator from '../user/middleware';
 import * as replyValidator from '../reply/middleware';
+import * as upvoteValidator from '../upvote/middleware';
 import * as discussionValidator from '../discussion/middleware';
 import * as replyUtil from '../reply/util';
-
+import * as upvoteUtil from '../upvote/util';
 import ReplyCollection from '../reply/collection';
+import UpvoteCollection from '../upvote/collection';
 
 const router = express.Router();
 
@@ -37,15 +39,33 @@ router.get(
       return;
     }
     const allReplies = await ReplyCollection.findAll();
-    const response = allReplies.map(replyUtil.constructReplyResponse);
+    const response = await Promise.all(allReplies.map(async (reply) => {
+      const replyId = reply._id.toString();
+      const upvote = await UpvoteCollection.findOne(replyId);
+
+      return ({
+        reply: replyUtil.constructReplyResponse(reply),
+        upvote: upvoteUtil.constructUpvoteResponse(upvote),
+      })
+    }));
     res.status(200).json(response);
   },
   [
     userValidator.isAuthorExists
   ],
   async (req: Request, res: Response) => {
-    const authorFreets = await ReplyCollection.findAllByUsername(req.query.author as string);
-    const response = authorFreets.map(replyUtil.constructReplyResponse);
+    const authorReplies = await ReplyCollection.findAllByUsername(req.query.author as string);
+    
+    const response = await Promise.all(authorReplies.map(async (reply) => {
+      const replyId = reply._id.toString();
+      const upvote = await UpvoteCollection.findOne(replyId);
+
+      return ({
+        reply: replyUtil.constructReplyResponse(reply),
+        upvote: upvoteUtil.constructUpvoteResponse(upvote),
+      })
+    }));
+    
     res.status(200).json(response);
   }
 );
@@ -70,14 +90,18 @@ router.post(
     discussionValidator.isDiscussionsByIdExists,
   ],
   async (req: Request, res: Response) => {
+    // create reply
     const userId = (req.session.userId as string) ?? ''; 
     const discussionId = req.params.discussionId;
     const reply = await ReplyCollection.addOne(userId, discussionId, req.body.content);
+    // create upvote
+    const replyId = reply._id;
+    const upvote = await UpvoteCollection.addOne(replyId)
 
     res.status(201).json({
-      message: 'Your reply was created successfully.',
+      message: 'Your reply and upvote were created successfully.',
       reply: replyUtil.constructReplyResponse(reply),
-    
+      upvote: upvoteUtil.constructUpvoteResponse(upvote),
     });
   }
 );
@@ -98,14 +122,20 @@ router.delete(
   [
     userValidator.isUserLoggedIn,
     replyValidator.isReplyExists,
+    upvoteValidator.isUpvoteExists,
     replyValidator.isValidReplyModifier,
   ],
   async (req: Request, res: Response) => {
     const replyId = req.params.replyId 
-    await ReplyCollection.deleteOne(replyId)
+    // delete upvote
+    const upvote = await UpvoteCollection.findOne(replyId);
+    const upvoteId = upvote._id;
+    await UpvoteCollection.deleteOne(upvoteId);
+    // delete reply
+    await ReplyCollection.deleteOne(replyId);
 
     res.status(200).json({
-      message: 'Your reply was deleted successfully.'
+      message: 'Your reply and upvote were deleted successfully.'
     });
   }
 );

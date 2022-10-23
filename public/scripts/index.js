@@ -49,6 +49,8 @@ const formsAndHandlers = {
     "create-reply": createReply,
     "edit-reply": editReply,
     "delete-reply": deleteReply,
+    "upvote-reply": upvoteReply,
+    // "downvote-reply": downvoteReply,
 };
 
 // Attach handlers to forms

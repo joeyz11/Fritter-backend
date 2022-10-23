@@ -6,6 +6,7 @@ import ReplyCollection from '../reply/collection';
  * Checks if a reply with replyId in req.params exists
  */
 const isReplyExists = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('reply exists?', req.params)
   const replyId = req.params.replyId
   const validFormat = Types.ObjectId.isValid(replyId);
   const reply = validFormat ? await ReplyCollection.findOne(replyId) : '';
