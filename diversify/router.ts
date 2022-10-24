@@ -1,80 +1,71 @@
 import type {NextFunction, Request, Response} from 'express';
 import express from 'express';
+import FreetCollection from '../freet/collection';
 
 import * as userValidator from '../user/middleware';
-
+import * as stampOfHumorUtil from '../stampOfHumor/util';
+import * as discussionUtil from '../discussion/util';
+import * as freetUtil from '../freet/util';
+import StampOfHumorCollection from '../stampOfHumor/collection';
+import DiscussionCollection from '../discussion/collection';
 
 const router = express.Router();
+import {Sentiment} from '../discussion/util'
 
 /**
  * Remove diversified freets
  *
- * @name DELETE /api/diversify/
+ * @name GET /api/diversify/remove
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in
  */
-router.delete(
-  '/',
+router.get(
+  '/remove',
   [
     userValidator.isUserLoggedIn,
   ],
   async (req: Request, res: Response) => {
-    // const freetId = req.params.freetId 
-    // // delete all replies
-    // const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
-    // const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
-    // const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
-    // const supportDiscussionId = supportDiscussion._id;
-    // const neutralDiscussionId = neutralDiscussion._id;
-    // const opposeDiscussionId = opposeDiscussion._id;
-    // await ReplyCollection.deleteManyByDiscussion(supportDiscussionId)
-    // await ReplyCollection.deleteManyByDiscussion(neutralDiscussionId)
-    // await ReplyCollection.deleteManyByDiscussion(opposeDiscussionId)
-    // // delete discussions
-    // await DiscussionCollection.deleteOne(supportDiscussionId);
-    // await DiscussionCollection.deleteOne(neutralDiscussionId);
-    // await DiscussionCollection.deleteOne(opposeDiscussionId);
-    // // delete stamp of humor
-    // const stampOfHumor = await StampOfHumorCollection.findOne(freetId)
-    // const stampOfHumorId = stampOfHumor._id;
-    // await StampOfHumorCollection.deleteOne(stampOfHumorId);
-    // // delete freet
-    // await FreetCollection.deleteOne(freetId);
 
     res.status(200).json({
-      message: 'Your diversified freet were removed successfully.'
+      diversifiedFreet: [] 
     });
   }
 );
 
 /**
- * Populate diversified freets
+ * Get diversified freets
  *
- * @name PUT /api/freets/
+ * @name Get /api/diversify
  *
  * @return {DiversifyResponse} - the updated freet, stampOfHumor, and discussions
  * @throws {403} - if the user is not logged in
  */
-router.put(
+router.get(
   '/',
   [
     userValidator.isUserLoggedIn,
   ],
   async (req: Request, res: Response) => {
-    // const freetId = req.params.freetId
-    // const content = req.body.content
-    // const isSatire = req.body.satire === 'true' ? true : false;
-    // const freet = await FreetCollection.updateOne(freetId, content);
-    // const stampOfHumor = await StampOfHumorCollection.findOne(freetId)
-    // const newStampOfHumor = await StampOfHumorCollection.updateOne(stampOfHumor._id, isSatire)
-    // // get discussions
-    // const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
-    // const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
-    // const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
-    res.status(200).json({
-      message: 'Your freet was updated successfully.',
-    });
+    const userId = (req.session.userId as string) ?? '';
+    // find diversified freets based on user
+    const diversifiedFreets = await FreetCollection.findDiversifiedFreetsForUserId(userId)
+    const response = await Promise.all(diversifiedFreets.map(async (freet) => {
+      const freetId = freet._id.toString();
+      const stampOfHumor = await StampOfHumorCollection.findOne(freetId);
+      const supportDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Support);
+      const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
+      const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
+      return ({
+        diversifiedFreet: freetUtil.constructFreetResponse(freet),
+        stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
+        supportDiscussion: discussionUtil.constructDiscussionResponse(supportDiscussion),
+        neutralDiscussion: discussionUtil.constructDiscussionResponse(neutralDiscussion),
+        opposeDiscussion: discussionUtil.constructDiscussionResponse(opposeDiscussion),
+      })
+    }));
+    res.status(200).json(response);
+
   }
 );
 

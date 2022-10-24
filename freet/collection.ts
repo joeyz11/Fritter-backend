@@ -48,7 +48,8 @@ class FreetCollection {
    */
   static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
-    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId');
+    const fritterDiversifyUser = await UserCollection.findOneByUsername('FritterDiversify')
+    return FreetModel.find({authorId : { $nin: [fritterDiversifyUser._id] }}).sort({dateModified: -1}).populate('authorId');
   }
 
   /**
@@ -60,6 +61,45 @@ class FreetCollection {
   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Freet>>> {
     const author = await UserCollection.findOneByUsername(username);
     return FreetModel.find({authorId: author._id}).populate('authorId');
+  }
+
+  /**
+   * Get all the freets in by userId
+   *
+   * @param {string} userId - The userId of author of the freets
+   * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
+   */
+  static async findAllByUserId(userId: string): Promise<Array<HydratedDocument<Freet>>> {
+    const user = await UserCollection.findOneByUserId(userId);
+    return FreetModel.find({authorId: user._id}).populate('authorId');
+  }
+
+  /**
+   * Get personalized diversify freets based on the user
+   *
+   * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
+   */
+  static async findDiversifiedFreetsForUserId(userId: string): Promise<Array<HydratedDocument<Freet>>> {
+    const allFritterDiversifyFreets = await FreetCollection.findAllByUsername('FritterDiversify');
+    const userFreets = await FreetCollection.findAllByUserId(userId);
+    const allUserFreetContent = userFreets.map((freet) => {
+      return freet.content;
+    }).join(', ');
+    const diversifiedFreets: Array<HydratedDocument<Freet>>  = []
+
+    if (!allUserFreetContent.includes("cat")) {
+      diversifiedFreets.push(allFritterDiversifyFreets[0])
+    }
+    if (!allUserFreetContent.includes("gif")) {
+      diversifiedFreets.push(allFritterDiversifyFreets[1])
+    }
+    if (!allUserFreetContent.includes("6.170")) {
+      diversifiedFreets.push(allFritterDiversifyFreets[2])
+    }
+    if (!allUserFreetContent.includes("pizza")) {
+      diversifiedFreets.push(allFritterDiversifyFreets[3])
+    }
+    return diversifiedFreets
   }
 
   /**

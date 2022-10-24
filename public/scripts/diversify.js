@@ -1,15 +1,7 @@
-function createDiversify(fields) {
-    fetch("/api/diversify", {
-        method: "POST",
-        body: JSON.stringify(fields),
-        headers: { "Content-Type": "application/json" },
-    })
-        .then(showResponse)
-        .catch(showResponse);
+function getDiversify(fields) {
+    fetch("/api/diversify").then(showResponse).catch(showResponse);
 }
 
-function deleteDiversify(fields) {
-    fetch("/api/diversify/", { method: "DELETE" })
-        .then(showResponse)
-        .catch(showResponse);
+function removeDiversify(fields) {
+    fetch("/api/diversify/remove").then(showResponse).catch(showResponse);
 }
