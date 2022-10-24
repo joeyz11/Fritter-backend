@@ -13,7 +13,7 @@ const router = express.Router();
 import {Sentiment} from '../discussion/util'
 
 /**
- * Remove diversified freets
+ * Get no diversified freets
  *
  * @name GET /api/diversify/remove
  *
@@ -26,8 +26,8 @@ router.get(
     userValidator.isUserLoggedIn,
   ],
   async (req: Request, res: Response) => {
-
     res.status(200).json({
+      message: 'Your diversified freets has been cleared successfully.',
       diversifiedFreet: [] 
     });
   }
@@ -37,8 +37,8 @@ router.get(
  * Get diversified freets
  *
  * @name Get /api/diversify
- *
- * @return {DiversifyResponse} - the updated freet, stampOfHumor, and discussions
+ * @return {string} A success message
+ * @return {FreetResponse } - the list of personalized diversify freets (and associated stampOfHumors and discussions)
  * @throws {403} - if the user is not logged in
  */
 router.get(
@@ -57,6 +57,7 @@ router.get(
       const neutralDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Neutral);
       const opposeDiscussion = await DiscussionCollection.findOne(freetId, Sentiment.Oppose);
       return ({
+        message: 'Your diversified freets has been fetched successfully.',
         diversifiedFreet: freetUtil.constructFreetResponse(freet),
         stampOfHumor: stampOfHumorUtil.constructStampOfHumorResponse(stampOfHumor),
         supportDiscussion: discussionUtil.constructDiscussionResponse(supportDiscussion),

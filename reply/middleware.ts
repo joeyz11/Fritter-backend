@@ -7,6 +7,11 @@ import ReplyCollection from '../reply/collection';
  */
 const isReplyExists = async (req: Request, res: Response, next: NextFunction) => {
   const replyId = req.params.replyId
+  if (!replyId) {
+    res.status(400).json({
+      error: `ReplyId not given`
+    }); 
+  }
   const validFormat = Types.ObjectId.isValid(replyId);
   const reply = validFormat ? await ReplyCollection.findOne(replyId) : '';
   if (!reply) {

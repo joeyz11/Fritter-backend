@@ -18,19 +18,18 @@ import {Sentiment} from '../discussion/util'
 const router = express.Router();
 
 /**
- * Get all the freets
+ * Get all the freets (and associated stampOfHumors and discussions)
  *
  * @name GET /api/freets
  *
- * @return {FreetAndStampOfHumorResponse[]} - A list of all the freets and stampOfHumors sorted in descending
- *                      order by date modified
+ * @return {FreetAndStampOfHumorResponseAndDiscussions[]} - An array of all freets (and associated stampOfHumors and discussions) sorted in descending order by date modified
  */
 /**
- * Get freets, stampOfHumors, and discussions by author.
+ * Get freets (and associated stampOfHumors and discussions) by author
  *
  * @name GET /api/freets?authorId=id
  *
- * @return {FreetAndStampOfHumorResponseAndDiscussions[]} - An array of freets, stampOfHumors, and associated discussions created by user with id, authorId
+ * @return {FreetAndStampOfHumorResponseAndDiscussions[]} - An array of freets (and associated stampOfHumors and discussions) created by user with id, authorId
  * @throws {400} - If authorId is not given
  * @throws {404} - If no user has given authorId
  *
@@ -43,6 +42,7 @@ router.get(
       next();
       return;
     }
+    // get all freets
     const allFreets = await FreetCollection.findAll();
     const response = await Promise.all(allFreets.map(async (freet) => {
       const freetId = freet._id.toString();
@@ -66,6 +66,7 @@ router.get(
     userValidator.isAuthorExists
   ],
   async (req: Request, res: Response) => {
+    // get all freets from author
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
     const response = await Promise.all(authorFreets.map(async (freet) => {
       const freetId = freet._id.toString();
@@ -88,13 +89,14 @@ router.get(
 );
 
 /**
- * Create a new freet, associated stampOfHumors, and associated discussions.
+ * Create a new freet (and associated stampOfHumors and discussions)
  *
  * @name POST /api/freets
  *
  * @param {string} content - The content of the freet
  * @param {string} satire - Whether the freet is satircal or not
- * @return {FreetResponse, StampOfHumorResponse, DiscussionResponse} - The created freet
+ * @return {string} A success message
+ * @return {FreetResponse, StampOfHumorResponse, DiscussionResponse} - The created freet and associated stampOfHumor and discussions
  * @throws {403} - If the user is not logged in
  * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
  * @throws {413} - If the freet content is more than 140 characters long
@@ -136,6 +138,7 @@ router.post(
  * @name DELETE /api/freets/:id
  *
  * @return {string} - A success message
+ * @throws {400} - If freetId is not given
  * @throws {403} - If the user is not logged in, or is not the author of
  *                 the freet or stampOfHumor
  * @throws {404} - If the freetId, stampOfHumorId, or any discussionIds are not valid
@@ -181,17 +184,17 @@ router.delete(
 );
 
 /**
- * Modify a freet and associated stampOfHumor
+ * Modify a freet (and associated stampOfHumor)
  *
- * @name PUT /api/freets/:id
+ * @name PUT /api/freets/:freetId
  *
  * @param {string} content - the new content for the freet
  * @param {string} satire - whether the new freet is satirical or not
+ * @param {string} A success message
  * @return {FreetResponse, StampOfHumorResponse, DiscussionResponse} - the updated freet, stampOfHumor, and discussions
- * @throws {403} - if the user is not logged in or not the author of
- *                 of the freet or stampOfHumor
- * @throws {404} - If the freetId os stampOfHumorId is not valid
- * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
+ * @throws {403} - if the user is not logged in, or if the user is not the author of the freet
+ * @throws {404} - If the freetId or stampOfHumorId is not valid
+ * @throws {400} - If the freet content is empty or a stream of empty spaces, or freetId is not given, or if satire field is undefined
  * @throws {413} - If the freet content is more than 140 characters long
  */
 router.put(

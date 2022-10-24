@@ -16,12 +16,13 @@ const router = express.Router();
  * @return {DiscussionResponse[]} - A list of all the discussions
  */
 /**
- * Get discussions by freetId.
+ * Get discussions of freet
  *
  * @name GET /api/discussions?freetId=id
  *
  * @return {DiscussionResponse[]} - An array of discussions associated with the freetId
- * @throws {404} - If no freet has given freetId
+ * @throws {400} - If freetId is not given
+ * @throws {404} - If freetId is invalid
  *
  */
 router.get(

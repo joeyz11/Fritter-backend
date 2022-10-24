@@ -8,6 +8,12 @@ import FreetCollection from '../freet/collection';
 const isFreetExists = async (req: Request, res: Response, next: NextFunction) => {
   const validFormat = Types.ObjectId.isValid(req.params.freetId) || Types.ObjectId.isValid(req.query.freetId as string);
   const freetId = req.params.freetId || (req.query.freetId as string)
+  if (!freetId ) {
+    res.status(400).json({
+      error: "Please provide freetId"
+    });
+    return;
+  }
   const freet = validFormat ? await FreetCollection.findOne(freetId) : '';
   if (!freet) {
     res.status(404).json({

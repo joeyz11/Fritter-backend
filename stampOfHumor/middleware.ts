@@ -7,12 +7,13 @@ import FreetCollection from '../freet/collection';
  * Checks if a stampOfHumor with stampOfHumorId exists
  */
 const isStampOfHumorExists = async (req: Request, res: Response, next: NextFunction) => {
-  const validFormat = Types.ObjectId.isValid(req.params.freetId);  
-  const stampOfHumor = validFormat ? await StampOfHumorCollection.findOne(req.params.freetId) : '';
+  const freetId = req.params.freetId;
+  const validFormat = Types.ObjectId.isValid(freetId);  
+  const stampOfHumor = validFormat ? await StampOfHumorCollection.findOne(freetId) : '';
   if (!stampOfHumor) {
     res.status(404).json({
       error: {
-        stampOfHumorNotFound: `Stamp Of Humor with associated freetId ${req.params.freetId} does not exist.`
+        stampOfHumorNotFound: `Stamp Of Humor with associated freetId ${freetId} does not exist.`
       }
     });
     return;

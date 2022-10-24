@@ -28,12 +28,12 @@ const isDiscussionsByIdExists = async (req: Request, res: Response, next: NextFu
   const validFormat = Types.ObjectId.isValid(req.params.discussionId);  
   const discussionId = req.params.discussionId
 
-  // if (!discussionId) {
-  //   res.status(404).json({
-  //     error: 'Discussion ID must not be empty.'
-  //   });
-  //   return; 
-  // }
+  if (!discussionId) {
+    res.status(400).json({
+      error: 'Discussion ID must not be empty.'
+    });
+    return; 
+  }
 
   const discussion = validFormat ? await DiscussionCollection.findOneById(discussionId) : '';
   if (!discussion) {

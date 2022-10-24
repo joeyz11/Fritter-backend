@@ -14,11 +14,13 @@ const router = express.Router();
 /**
  * Increment upvote of associated replyId
  *
- * @name PUT /api/upvotes/:id/inc
+ * @name PUT /api/upvotes/:replyId/inc
  *
+ * @return {string} - A success message
  * @return {UpvoteResponse} - the updated upvote
+ * @throws {400} - if replyId is not given
  * @throws {403} - if the user is not logged in
- * @throws {404} - If the replyId does not exist
+ * @throws {404} - If the replyId is invalid
  */
 router.put(
   '/:replyId?/inc',
@@ -49,9 +51,11 @@ router.put(
  *
  * @name PUT /api/upvotes/:id/dec
  *
+ * @return {string} - A success message
  * @return {UpvoteResponse} - the updated upvote
+ * @throws {400} - if replyId is not given
  * @throws {403} - if the user is not logged in
- * @throws {404} - If the replyId does not exist
+ * @throws {404} - If the replyId is invalid
  */
 router.put(
   '/:replyId?/dec',
