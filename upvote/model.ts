@@ -3,14 +3,14 @@ import {Schema, model} from 'mongoose';
 import type {Reply} from '../reply/model';
 
 export type Upvote = {
-  _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+  _id: Types.ObjectId;
   replyId: Types.ObjectId;
   numUpvote: number;
   upvoters: Types.ObjectId[]
 };
 
 export type PopulatedUpvote = {
-  _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+  _id: Types.ObjectId;
   replyId: Reply;
   numUpvote: number;
   upvoters: Array<string>

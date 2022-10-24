@@ -3,13 +3,13 @@ import {Schema, model} from 'mongoose';
 import type {Freet} from '../freet/model';
 
 export type StampOfHumor = {
-  _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+  _id: Types.ObjectId;
   freetId: Types.ObjectId;
   isSatire: boolean;
 };
 
 export type PopulatedStampOfHumor = {
-  _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+  _id: Types.ObjectId;
   freetId: Freet;
   isSatire: boolean;
 };

@@ -32,10 +32,9 @@ class StampOfHumorCollection {
   /**
    * Get all the stampOfHumors in the database
    *
-   * @return {Promise<HydratedDocument<StampOfHumor>[]>} - An array of all of the freets
+   * @return {Promise<HydratedDocument<StampOfHumor>[]>} - An array of all of the stamp of humors
    */
   static async findAll(): Promise<Array<HydratedDocument<StampOfHumor>>> {
-    // Retrieves freets and sorts them from most to least recent
     return StampOfHumorModel.find({}).populate('freetId');
   }
 

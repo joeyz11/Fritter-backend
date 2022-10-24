@@ -13,12 +13,9 @@ import StampOfHumorCollection from '../stampOfHumor/collection';
 import DiscussionCollection from '../discussion/collection';
 import ReplyCollection from '../reply/collection';
 
+import {Sentiment} from '../discussion/util'
+
 const router = express.Router();
-enum Sentiment {
-  Support = 'support',
-  Neutral = 'neutral',
-  Oppose = 'oppose'
-}
 
 /**
  * Get all the freets

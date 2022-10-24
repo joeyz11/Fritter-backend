@@ -1,5 +1,4 @@
 import type {HydratedDocument, Types} from 'mongoose';
-import UserCollection from 'user/collection';
 import type {Upvote} from './model';
 import type {User} from '../user/model';
 import UpvoteModel from './model';
@@ -10,7 +9,7 @@ class UpvoteCollection {
    * Add an upvote to the collection
    *
    * @param {string} replyId - The replyId of the upvote
-   * @return {Promise<HydratedDocument<StampOfHumor>>} - The newly created stampOfHumor
+   * @return {Promise<HydratedDocument<Upvote>>} - The newly created upvote
    */
   static async addOne(replyId: Types.ObjectId | string): Promise<HydratedDocument<Upvote>> {
     const upvote = new UpvoteModel({
@@ -44,16 +43,13 @@ class UpvoteCollection {
    *
    * @return {Promise<HydratedDocument<Upvote>[]>} - An array of all of the freets
    */
-  // TODO: fix
   static async findAllByDiscussion(discussionId: Types.ObjectId | string): Promise<Array<HydratedDocument<Upvote>>> {
     const replies = await ReplyCollection.findAllByDiscussion(discussionId);
-    const upvotes = Promise.all(replies.map((reply) => {
+    const upvotesPromise = Promise.all(replies.map((reply) => {
       const replyId = reply._id;
       return UpvoteCollection.findOne(replyId)
     }))
-
-    return upvotes
-    // return UpvoteModel.find({discussionId: discussionId}).populate('replyId');
+    return upvotesPromise;
   }
 
   /**
@@ -65,11 +61,9 @@ class UpvoteCollection {
    * @return {Promise<HydratedDocument<Upvote>>} - The newly updated stampOfHumor
    */
   static async updateOne(upvoteId: Types.ObjectId | string, upvoter: User, inc: boolean): Promise<HydratedDocument<Upvote>> {
-
     const upvote = await UpvoteModel.findOne({_id: upvoteId});
     if (inc) upvote.numUpvote = upvote.numUpvote + 1;
     else upvote.numUpvote = upvote.numUpvote - 1;
-    
     upvote.upvoters.push(upvoter._id);
     await upvote.save();
     return upvote.populate('replyId');

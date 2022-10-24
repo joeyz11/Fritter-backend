@@ -1,9 +1,7 @@
 import type {HydratedDocument, Types} from 'mongoose';
-import ReplyModel from '../reply/model';
 import type {Reply} from '../reply/model';
 import type {Discussion} from './model';
 import DiscussionModel from './model';
-import ReplyCollection from '../reply/collection';
 
 class DiscussionCollection {
   /**
@@ -11,7 +9,7 @@ class DiscussionCollection {
    *
    * @param {string} freetId - The freetId of the discussion
    * @param {string} sentiment - The sentiment of this discussion
-   * @return {Promise<HydratedDocument<Discussion>>} - The newly created stampOfHumor
+   * @return {Promise<HydratedDocument<Discussion>>} - The newly created discussion
    */
   static async addOne(freetId: Types.ObjectId | string, sentiment: string): Promise<HydratedDocument<Discussion>> {
     const discussion = new DiscussionModel({

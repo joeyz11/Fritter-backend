@@ -10,7 +10,6 @@ import UserCollection from '../user/collection';
 const isCurrentSessionUserExists = async (req: Request, res: Response, next: NextFunction) => {
   if (req.session.userId) {
     const user = await UserCollection.findOneByUserId(req.session.userId);
-
     if (!user) {
       req.session.userId = undefined;
       res.status(500).json({
@@ -64,16 +63,13 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
  */
 const isAccountExists = async (req: Request, res: Response, next: NextFunction) => {
   const {username, password} = req.body as {username: string; password: string};
-
   if (!username || !password) {
     res.status(400).json({error: `Missing ${username ? 'password' : 'username'} credentials for sign in.`});
     return;
   }
-
   const user = await UserCollection.findOneByUsernameAndPassword(
     username, password
   );
-
   if (user) {
     next();
   } else {
@@ -86,14 +82,12 @@ const isAccountExists = async (req: Request, res: Response, next: NextFunction) 
  */
 const isUsernameNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
   const user = await UserCollection.findOneByUsername(req.body.username);
-
   // If the current session user wants to change their username to one which matches
   // the current one irrespective of the case, we should allow them to do so
   if (!user || (user?._id.toString() === req.session.userId)) {
     next();
     return;
   }
-
   res.status(409).json({
     error: {
       username: 'An account with this username already exists.'
@@ -105,7 +99,6 @@ const isUsernameNotAlreadyInUse = async (req: Request, res: Response, next: Next
  * Checks if the user is logged in, that is, whether the userId is set in session
  */
 const isUserLoggedIn = (req: Request, res: Response, next: NextFunction) => {
-  // console.log('user is logged in!')
   if (!req.session.userId) {
     res.status(403).json({
       error: {
@@ -142,7 +135,6 @@ const isAuthorExists = async (req: Request, res: Response, next: NextFunction) =
     });
     return;
   }
-
   const user = await UserCollection.findOneByUsername(req.query.author as string);
   if (!user) {
     res.status(404).json({

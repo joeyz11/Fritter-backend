@@ -1,18 +1,18 @@
 import type {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
 import UpvoteCollection from './collection';
-import FreetCollection from '../freet/collection';
 
 /**
  * Checks if a upvote with associated replyId exists
  */
 const isUpvoteExists = async (req: Request, res: Response, next: NextFunction) => {
-  const validFormat = Types.ObjectId.isValid(req.params.replyId);  
-  const upvote = validFormat ? await UpvoteCollection.findOne(req.params.replyId) : '';
+  const replyId = req.params.replyId
+  const validFormat = Types.ObjectId.isValid(replyId);  
+  const upvote = validFormat ? await UpvoteCollection.findOne(replyId) : '';
   if (!upvote) {
     res.status(404).json({
       error: {
-        upvoteNotFound: `Upvote with associated replyId ${req.params.replyId} does not exist.`
+        upvoteNotFound: `Upvote with associated replyId ${replyId} does not exist.`
       }
     });
     return;
@@ -26,13 +26,10 @@ const isUpvoteExists = async (req: Request, res: Response, next: NextFunction) =
  */
 const isValidUpvoteModifier = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.session.userId
-  // console.log('ccurent user', userId)
   const replyId = req.params.replyId
-  // const reply = await FreetCollection.findOne(replyId);
   const upvote = await UpvoteCollection.findOne(replyId);
 
   for (const id of upvote.upvoters) {
-    // console.log('invalid users', id)
     if (id.toString() === userId) {
       res.status(403).json({
         error: 'Cannot upvote a reply again.'
@@ -43,7 +40,6 @@ const isValidUpvoteModifier = async (req: Request, res: Response, next: NextFunc
 
   next();
 };
-
 
 export {
   isUpvoteExists,

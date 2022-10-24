@@ -17,7 +17,7 @@ type UpvoteResponse = {
 const constructUpvoteResponse = (upvote: HydratedDocument<Upvote>): UpvoteResponse => {
   const upvoteCopy: PopulatedUpvote = {
     ...upvote.toObject({
-      versionKey: false // Cosmetics; prevents returning of __v property
+      versionKey: false,
     })
   };
   const {_id} = upvoteCopy.replyId;

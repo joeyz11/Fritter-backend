@@ -7,6 +7,12 @@ type DiscussionResponse = {
   sentiment: string;
 };
 
+export enum Sentiment {
+  Support = 'support',
+  Neutral = 'neutral',
+  Oppose = 'oppose'
+}
+
 /**
  * Transform a raw Discussion object from the database into an object
  * with all the information needed by the frontend
@@ -17,7 +23,7 @@ type DiscussionResponse = {
 const constructDiscussionResponse = (discussion: HydratedDocument<Discussion>): DiscussionResponse => {
   const discussionCopy: PopulatedDiscussion = {
     ...discussion.toObject({
-      versionKey: false // Cosmetics; prevents returning of __v property
+      versionKey: false
     })
   };
   const {_id} = discussionCopy.freetId;

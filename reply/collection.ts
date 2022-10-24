@@ -11,7 +11,7 @@ class ReplyCollection {
    * @param {string} authorId - The id of the author of the reply
    * @param {string} discussionId - The id of the associated discussion of the reply
    * @param {string} content - The content of the reply
-   * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
+   * @return {Promise<HydratedDocument<Reply>>} - The newly created reply
    */
   static async addOne(authorId: Types.ObjectId | string, discussionId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Reply>> {
     const date = new Date();
@@ -24,7 +24,7 @@ class ReplyCollection {
     });
     await DiscussionCollection.addReplyTo(discussionId, reply)
     await reply.save();
-    return reply.populate('authorId');
+    return reply.populate(['authorId', 'discussionId']);
   }
 
   /**
@@ -34,7 +34,7 @@ class ReplyCollection {
    * @return {Promise<HydratedDocument<Reply>> | Promise<null> } - The reply with the given replyId, if any
    */
   static async findOne(replyId: Types.ObjectId | string): Promise<HydratedDocument<Reply>> {
-    return ReplyModel.findOne({_id: replyId}).populate('authorId');
+    return ReplyModel.findOne({_id: replyId}).populate(['authorId', 'discussionId']);
   }
 
   /**
@@ -43,8 +43,7 @@ class ReplyCollection {
    * @return {Promise<HydratedDocument<Reply>[]>} - An array of all of the replies
    */
   static async findAll(): Promise<Array<HydratedDocument<Reply>>> {
-    // Retrieves replies and sorts them from most to least recent
-    return ReplyModel.find({}).sort({dateModified: -1}).populate('authorId');
+    return ReplyModel.find({}).sort({dateModified: -1}).populate(['authorId', 'discussionId']);
   }
 
   /**
@@ -55,7 +54,7 @@ class ReplyCollection {
    */
   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Reply>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return ReplyModel.find({authorId: author._id}).populate('authorId');
+    return ReplyModel.find({authorId: author._id}).populate(['authorId', 'discussionId']);
   }
 
   /**
@@ -66,11 +65,11 @@ class ReplyCollection {
    */
     static async findAllByDiscussion(discussionId: Types.ObjectId | string): Promise<Array<HydratedDocument<Reply>>> {
       const discussion = await DiscussionCollection.findOneById(discussionId);
-      return ReplyModel.find({discussionId: discussion._id}).populate('authorId');
+      return ReplyModel.find({discussionId: discussion._id}).populate(['authorId', 'discussionId']);
     }
 
   /**
-   * Update a freet with the new content
+   * Update a reply with the new content
    *
    * @param {string} replyId - The id of the reply to be updated
    * @param {string} content - The new content of the reply
@@ -81,7 +80,7 @@ class ReplyCollection {
     reply.content = content;
     reply.dateModified = new Date();
     await reply.save();
-    return reply.populate('authorId');
+    return reply.populate(['authorId', 'discussionId']);
   }
 
   /**
@@ -92,7 +91,6 @@ class ReplyCollection {
    */
   static async deleteOne(replyId: Types.ObjectId | string): Promise<boolean> {
     const reply = await ReplyCollection.findOne(replyId);
-    
     const response = await ReplyModel.deleteOne({_id: replyId});
     await DiscussionCollection.deleteReplyFrom(reply)
     return response !== null;

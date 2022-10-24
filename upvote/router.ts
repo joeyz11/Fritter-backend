@@ -18,7 +18,7 @@ const router = express.Router();
  *
  * @return {UpvoteResponse} - the updated upvote
  * @throws {403} - if the user is not logged in
- * @throws {404} - If the replyId
+ * @throws {404} - If the replyId does not exist
  */
 router.put(
   '/:replyId?/inc',
@@ -29,9 +29,6 @@ router.put(
     upvoteValidator.isValidUpvoteModifier
   ],
   async (req: Request, res: Response) => {
-    // console.log('req.query', req.query)
-    // console.log('req.body', req.body)
-    // console.log('req.params', req.params)
     const userId = (req.session.userId as string) ?? '';
     const user = await UserCollection.findOneByUserId(userId);
     const replyId = req.params.replyId
@@ -39,7 +36,6 @@ router.put(
     const upvote = await UpvoteCollection.findOne(replyId);
     const upvoteId = upvote._id;
     const newUpvote = await UpvoteCollection.updateOne(upvoteId, user, true);
-
     res.status(200).json({
       message: 'Your upvote was incremented successfully.',
       reply: replyUtil.constructReplyResponse(reply),
@@ -55,7 +51,7 @@ router.put(
  *
  * @return {UpvoteResponse} - the updated upvote
  * @throws {403} - if the user is not logged in
- * @throws {404} - If the replyId
+ * @throws {404} - If the replyId does not exist
  */
 router.put(
   '/:replyId?/dec',
@@ -73,7 +69,6 @@ router.put(
     const upvote = await UpvoteCollection.findOne(replyId);
     const upvoteId = upvote._id;
     const newUpvote = await UpvoteCollection.updateOne(upvoteId, user, false);
-
     res.status(200).json({
       message: 'Your upvote was decremented successfully.',
       reply: replyUtil.constructReplyResponse(reply),

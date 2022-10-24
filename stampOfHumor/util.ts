@@ -17,7 +17,7 @@ type StampOfHumorResponse = {
 const constructStampOfHumorResponse = (stampOfHumor: HydratedDocument<StampOfHumor>): StampOfHumorResponse => {
   const stampOfHumorCopy: PopulatedStampOfHumor = {
     ...stampOfHumor.toObject({
-      versionKey: false // Cosmetics; prevents returning of __v property
+      versionKey: false
     })
   };
   const {_id} = stampOfHumorCopy.freetId;

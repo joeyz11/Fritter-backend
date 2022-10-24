@@ -2,16 +2,11 @@ import type {NextFunction, Request, Response} from 'express';
 
 import * as discussionUtil from '../discussion/util';
 import * as freetValidator from '../freet/middleware';
-import * as discussionValidator from '../discussion/middleware';
 import DiscussionCollection from '../discussion/collection';
 import express from 'express';
+import {Sentiment} from '../discussion/util'
 
 const router = express.Router();
-enum Sentiment {
-  Support = 'support',
-  Neutral = 'neutral',
-  Oppose = 'oppose'
-}
 
 /**
  * Get all the discussions

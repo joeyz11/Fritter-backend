@@ -3,14 +3,14 @@ import {Schema, model} from 'mongoose';
 import type {Freet} from '../freet/model';
 
 export type Discussion = {
-  _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+  _id: Types.ObjectId;
   freetId: Types.ObjectId;
   sentiment: string
   replies: Types.ObjectId[];
 };
 
 export type PopulatedDiscussion = {
-  _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+  _id: Types.ObjectId;
   freetId: Freet;
   sentiment: string
   replies: Array<string>;

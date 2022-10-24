@@ -8,7 +8,7 @@ function createDiversify(fields) {
         .catch(showResponse);
 }
 
-function deleteFreet(fields) {
+function deleteDiversify(fields) {
     fetch("/api/diversify/", { method: "DELETE" })
         .then(showResponse)
         .catch(showResponse);

@@ -1,4 +1,6 @@
 import type {NextFunction, Request, Response} from 'express';
+import type {HydratedDocument, Types} from 'mongoose';
+import type {Upvote} from '../upvote/model';
 import express from 'express';
 import * as userValidator from '../user/middleware';
 import * as replyValidator from '../reply/middleware';
@@ -9,11 +11,7 @@ import * as upvoteUtil from '../upvote/util';
 import ReplyCollection from '../reply/collection';
 import UpvoteCollection from '../upvote/collection';
 
-import type {HydratedDocument, Types} from 'mongoose';
-import type {Upvote} from '../upvote/model';
-
 const router = express.Router();
-
 
 /**
  * Get all the replies
@@ -22,6 +20,16 @@ const router = express.Router();
  *
  * @return {ReplyResponse[]} - A list of all the replies sorted in descending
  *                      order by date modified
+ */
+/**
+ * Get replies by discussion.
+ *
+ * @name GET /api/replies?discussionId=id
+ *
+ * @return {ReplyResponse[]} - An array of replies created by user with id, discussionId
+ * @throws {400} - If discussionId is not given
+ * @throws {404} - If no discussion has given discussionId
+ *
  */
 /**
  * Get replies by author.
@@ -36,22 +44,16 @@ const router = express.Router();
 router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
-    // console.log('req.query', req.query)
-    // console.log('req.params', req.params)
-    // console.log('req.body', req.body)
-    // Check if authorId query parameter was supplied
     if (req.query.author !== undefined) {
       next();
       return;
     }
     if (req.query.discussionId === undefined) {
-
+      // get all replies
       const allReplies = await ReplyCollection.findAll();
-
       const response = await Promise.all(allReplies.map(async (reply) => {
       const replyId = reply._id.toString();
       const upvote = await UpvoteCollection.findOne(replyId);
-
       return ({
         reply: replyUtil.constructReplyResponse(reply),
         upvote: upvoteUtil.constructUpvoteResponse(upvote),
@@ -60,10 +62,11 @@ router.get(
       res.status(200).json(response);
       return;
     }
-
+    // get replied from discussion
     const discussionId = (req.query.discussionId as string)
     const upvotesOfDiscussion = await UpvoteCollection.findAllByDiscussion(discussionId)
 
+    // sort by descreasing numUpvote
     function upvoteBubbleSort(upvotes: Array<HydratedDocument<Upvote>>){
       //Outer pass
       for(let i = 0; i < upvotes.length; i++){
@@ -80,37 +83,30 @@ router.get(
     };
 
     const orderedUpvotesOfDiscussion = upvoteBubbleSort(upvotesOfDiscussion);
-
     const response = await Promise.all(orderedUpvotesOfDiscussion.map(async (upvote) => {
       const replyId = upvote.replyId;
       const reply = await ReplyCollection.findOne(replyId);
-
       return ({
         reply: replyUtil.constructReplyResponse(reply),
         upvote: upvoteUtil.constructUpvoteResponse(upvote),
       }) 
     }))
-
     res.status(200).json(response);
-
-    
   },
   [
     userValidator.isAuthorExists
   ],
   async (req: Request, res: Response) => {
+    // get replies from author
     const authorReplies = await ReplyCollection.findAllByUsername(req.query.author as string);
-    
     const response = await Promise.all(authorReplies.map(async (reply) => {
       const replyId = reply._id.toString();
       const upvote = await UpvoteCollection.findOne(replyId);
-
       return ({
         reply: replyUtil.constructReplyResponse(reply),
         upvote: upvoteUtil.constructUpvoteResponse(upvote),
       })
     }));
-    
     res.status(200).json(response);
   }
 );
@@ -142,7 +138,6 @@ router.post(
     // create upvote
     const replyId = reply._id;
     const upvote = await UpvoteCollection.addOne(replyId)
-
     res.status(201).json({
       message: 'Your reply and upvote were created successfully.',
       reply: replyUtil.constructReplyResponse(reply),
@@ -151,11 +146,10 @@ router.post(
   }
 );
 
-
 /**
- * Delete a freet, associated stampOfHumor, and associated discussions
+ * Delete a reply
  *
- * @name DELETE /api/freets/:id
+ * @name DELETE /api/reply/:id
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in, or is not the author of
@@ -178,7 +172,6 @@ router.delete(
     await UpvoteCollection.deleteOne(upvoteId);
     // delete reply
     await ReplyCollection.deleteOne(replyId);
-
     res.status(200).json({
       message: 'Your reply and upvote were deleted successfully.'
     });
@@ -192,12 +185,12 @@ router.delete(
  * @name PUT /api/replies/:id
  *
  * @param {string} content - the new content for the freet
- * @return {ReplyResponse} - the updated freet, stampOfHumor, and discussions
+ * @return {ReplyResponse} - the updated reply
  * @throws {403} - if the user is not logged in or not the author of
- *                 of the freet or stampOfHumor
- * @throws {404} - If the freetId os stampOfHumorId is not valid
- * @throws {400} - If the freet content is empty or a stream of empty spaces, or if satire field is undefined
- * @throws {413} - If the freet content is more than 140 characters long
+ *                 of the reply
+ * @throws {404} - If the replyId is not valid
+ * @throws {400} - If the reply content is empty or a stream of empty spaces
+ * @throws {413} - If the reply content is more than 140 characters long
  */
 router.put(
   '/:replyId?',
@@ -211,14 +204,11 @@ router.put(
     const replyId = req.params.replyId
     const content = req.body.content
     const reply = await ReplyCollection.updateOne(replyId, content);
-
     res.status(200).json({
       message: 'Your reply was updated successfully.',
       reply: replyUtil.constructReplyResponse(reply),
     });
   }
 );
-
-
 
 export {router as replyRouter};
