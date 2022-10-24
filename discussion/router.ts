@@ -9,13 +9,6 @@ import {Sentiment} from '../discussion/util'
 const router = express.Router();
 
 /**
- * Get all the discussions
- *
- * @name GET /api/discussions
- *
- * @return {DiscussionResponse[]} - A list of all the discussions
- */
-/**
  * Get discussions of freet
  *
  * @name GET /api/discussions?freetId=id
@@ -27,21 +20,6 @@ const router = express.Router();
  */
 router.get(
   '/',
-  async (req: Request, res: Response, next: NextFunction) => {
-    // Check if freetId query parameter was supplied
-    if (req.query.freetId !== undefined) {
-      next();
-      return;
-    }
-    const allDiscussions = await DiscussionCollection.findAll();
-    const response = await Promise.all(allDiscussions.map(async (discussion) => {
-
-      return ({
-        discussion: discussionUtil.constructDiscussionResponse(discussion),
-      })
-    }));
-    res.status(200).json(response);
-  },
   [
     freetValidator.isFreetExists
   ],

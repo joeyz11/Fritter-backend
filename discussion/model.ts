@@ -5,14 +5,14 @@ import type {Freet} from '../freet/model';
 export type Discussion = {
   _id: Types.ObjectId;
   freetId: Types.ObjectId;
-  sentiment: string
+  sentiment: string;
   replies: Types.ObjectId[];
 };
 
 export type PopulatedDiscussion = {
   _id: Types.ObjectId;
   freetId: Freet;
-  sentiment: string
+  sentiment: string;
   replies: Array<string>;
 };
 

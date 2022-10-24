@@ -45,7 +45,6 @@ const formsAndHandlers = {
     "diversify-on": getDiversify,
     "diversify-off": removeDiversify,
     // Discussion
-    "view-all-discussions": ViewAllDiscussions,
     "view-discussions-of-freet": ViewDiscussionsOfFreet,
     // Reply
     "view-all-replies": viewAllReplies,

@@ -4,24 +4,24 @@ Build your own not-quite-[Twitter](https://twitter.com/)!
 
 ## Starter Code
 
-  This starter code implements users (with login/sessions), and freets so that you may focus on implementing your own design ideas.
+This starter code implements users (with login/sessions), and freets so that you may focus on implementing your own design ideas.
 
 The project is structured as follows:
 
-- `index.ts` sets up the database connection and the Express server
-- `/freet` contains files related to freet concept
-  - `collection.ts` contains freet collection class to wrap around MongoDB database
-  - `middleware.ts` contains freet middleware
-  - `model.ts` contains definition of freet datatype
-  - `router.ts` contains backend freet routes
-  - `util.ts` contains freet utility functions for transforming data returned to the client
-- `/user` contains files related to user concept
-  - `collection.ts` contains user collection class to wrap around MongoDB database
-  - `middleware.ts` contains user middleware
-  - `model.ts` - contains definition of user datatype
-  - `router.ts` - contains backend user routes
-  - `util.ts` contains user utility functions for transforming data returned to the client
-- `/public` contains the code for the frontend (HTML/CSS/browser JS)
+-   `index.ts` sets up the database connection and the Express server
+-   `/freet` contains files related to freet concept
+    -   `collection.ts` contains freet collection class to wrap around MongoDB database
+    -   `middleware.ts` contains freet middleware
+    -   `model.ts` contains definition of freet datatype
+    -   `router.ts` contains backend freet routes
+    -   `util.ts` contains freet utility functions for transforming data returned to the client
+-   `/user` contains files related to user concept
+    -   `collection.ts` contains user collection class to wrap around MongoDB database
+    -   `middleware.ts` contains user middleware
+    -   `model.ts` - contains definition of user datatype
+    -   `router.ts` - contains backend user routes
+    -   `util.ts` contains user utility functions for transforming data returned to the client
+-   `/public` contains the code for the frontend (HTML/CSS/browser JS)
 
 ## Installation
 
@@ -31,12 +31,12 @@ If you did **not** take 6.031 in Fall 2021 or Spring 2022, to ensure that your m
 
 ### Setting up the demo branch (optional, but very helpful as a reference!)
 
-- Navigate to the root folder of your cloned repository.
-- Run `source demo-setup.sh` to set up the demo branches.
-- Check your local branches with `git branch`; you should have one new branch, with a new commit.
-  - `view-demo` demos how to extend functionality of a resource
-- If everything looks good, run `git push --all origin`. At this point, you should see the demo branch at `https://github.com/<username>/<repo-name>/branches` (and the `view-demo-code` branch can now be deleted!)
-- Now, if you navigate to the commit history of this branch (`https://github.com/<username>/<repo-name>/commits/<branch-name>`), you can click on the "demo:" commit and see exactly what we changed for each demo!
+-   Navigate to the root folder of your cloned repository.
+-   Run `source demo-setup.sh` to set up the demo branches.
+-   Check your local branches with `git branch`; you should have one new branch, with a new commit.
+    -   `view-demo` demos how to extend functionality of a resource
+-   If everything looks good, run `git push --all origin`. At this point, you should see the demo branch at `https://github.com/<username>/<repo-name>/branches` (and the `view-demo-code` branch can now be deleted!)
+-   Now, if you navigate to the commit history of this branch (`https://github.com/<username>/<repo-name>/commits/<branch-name>`), you can click on the "demo:" commit and see exactly what we changed for each demo!
 
 ### MongoDB Atlas setup
 
@@ -84,17 +84,17 @@ Vercel will automatically deploy the latest version of your code whenever a push
 
 The data that Fritter stores is divided into modular collections called "resources". The starter code has only two resources, "freets" and "users". The codebase has the following:
 
-- A model file for each resource (e.g. `freet/model.ts`). This defines the resource's datatype, which defines the resource's backend type, and should be a distilled form of the information this resource holds (as in ADTs). This also defines its schema, which tells MongoDB how to store our resource, and should match with the datatype.
-- A collection file for each resource (e.g. `freet/collection.ts`). This defines operations Fritter might want to perform on the resource. Each operation works on the entire database table (represented by e.g. `FreetModel`), so you would operate on one Freet by using `FreetModel.findOne()`.
-- Routes file (e.g. `freet/router.ts`). This contains the Fritter backend's REST API routes for freets resource, and interact with the resource collection. All the routes in the file are automatically prefixed by e.g. `/api/freets`.
-- Middleware file (e.g `freet/middleware.ts`). This contains methods that validate the state of the resource before performing logic for a given API route. For instance `isFreetExists` in `freet/middleware.ts` ensures that a freet with given `freetId` exists in the database
+-   A model file for each resource (e.g. `freet/model.ts`). This defines the resource's datatype, which defines the resource's backend type, and should be a distilled form of the information this resource holds (as in ADTs). This also defines its schema, which tells MongoDB how to store our resource, and should match with the datatype.
+-   A collection file for each resource (e.g. `freet/collection.ts`). This defines operations Fritter might want to perform on the resource. Each operation works on the entire database table (represented by e.g. `FreetModel`), so you would operate on one Freet by using `FreetModel.findOne()`.
+-   Routes file (e.g. `freet/router.ts`). This contains the Fritter backend's REST API routes for freets resource, and interact with the resource collection. All the routes in the file are automatically prefixed by e.g. `/api/freets`.
+-   Middleware file (e.g `freet/middleware.ts`). This contains methods that validate the state of the resource before performing logic for a given API route. For instance `isFreetExists` in `freet/middleware.ts` ensures that a freet with given `freetId` exists in the database
 
 To add a resource or edit functionality of an existing resource:
 
-- Create/modify files in the four above categories, making sure you have one model file, one collection one router file, and one middleware file per resource.
-  - It helps to go in the order that they're listed above, starting with the resource's datatype.
-- In `freet/utils.ts` and `user/utils.ts` there are type definitions for frontend representations of resources, and functions to convert from a backend resource type. Create/modify these as necessary.
-  - An example: the frontend type definition for User lacks a `password` property, because the frontend should never be receiving users' passwords.
+-   Create/modify files in the four above categories, making sure you have one model file, one collection one router file, and one middleware file per resource.
+    -   It helps to go in the order that they're listed above, starting with the resource's datatype.
+-   In `freet/utils.ts` and `user/utils.ts` there are type definitions for frontend representations of resources, and functions to convert from a backend resource type. Create/modify these as necessary.
+    -   An example: the frontend type definition for User lacks a `password` property, because the frontend should never be receiving users' passwords.
 
 ### Frontend
 
@@ -179,301 +179,293 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Returns**
 
-- An array of all freets (and associated stampOfHumors and discussions) sorted in descending order by date modified
+-   An array of all freets (and associated stampOfHumors and discussions) sorted in descending order by date modified
 
 #### `GET /api/freets?author=USERNAME` - Get freets (and associated stampOfHumors and discussions) by author
 
 **Returns**
 
-- An array of freets (and associated stampOfHumors and discussions) created by user with username `author`
+-   An array of freets (and associated stampOfHumors and discussions) created by user with username `author`
 
 **Throws**
 
-- `400` if `author` is not given
-- `404` if `author` is not a recognized username of any user
+-   `400` if `author` is not given
+-   `404` if `author` is not a recognized username of any user
 
 #### `POST /api/freets` - Create a new freet (and associated stampOfHumors and discussions)
 
 **Body**
 
-- `content` _{string}_ - The content of the freet
-- `satire` _{string}_ - Whether the freet is satirical or not
+-   `content` _{string}_ - The content of the freet
+-   `satire` _{string}_ - Whether the freet is satirical or not
 
 **Returns**
 
-- A success message
-- A object with the created freet and associated stampOfHumor and discussions
+-   A success message
+-   A object with the created freet and associated stampOfHumor and discussions
 
 **Throws**
 
-- `403` if the user is not logged in
-- `400` If the freet content is empty or a stream of empty spaces, or if satire field is undefined
-- `413` If the freet content is more than 140 characters long
+-   `403` if the user is not logged in
+-   `400` If the freet content is empty or a stream of empty spaces, or if satire field is undefined
+-   `413` If the freet content is more than 140 characters long
 
 #### `DELETE /api/freets/:freetId?` - Delete an existing freet (and associated stampOfHumor and discussions)
 
 **Returns**
 
-- A success message
+-   A success message
 
 **Throws**
 
-- `400` if `freetId` is not given
-- `403` if the user is not logged in, or if the user is not the author of the freet
-- `404` if the freetId is invalid
+-   `400` if `freetId` is not given
+-   `403` if the user is not logged in, or if the user is not the author of the freet
+-   `404` if the freetId is invalid
 
 #### `PUT /api/freets/:freetId?` - Update an existing freet
 
 **Body**
 
-- `content` _{string}_ - The new content of the freet
-- `satire` _{string}_ - Whether the new freet is satirical or not
+-   `content` _{string}_ - The new content of the freet
+-   `satire` _{string}_ - Whether the new freet is satirical or not
 
 **Returns**
 
-- A success message
-- An object with the updated freet (and associated stampOfHumor)
+-   A success message
+-   An object with the updated freet (and associated stampOfHumor)
 
 **Throws**
 
-- `403` if the user is not logged in, or if the user is not the author of the freet
-- `404` if the freetId is invalid
-- `400` If the freet content is empty or a stream of empty spaces, or 'freetId' is not given, or if satire field is undefined
-- `413` if the new freet content is more than 140 characters long
+-   `403` if the user is not logged in, or if the user is not the author of the freet
+-   `404` if the freetId is invalid
+-   `400` If the freet content is empty or a stream of empty spaces, or 'freetId' is not given, or if satire field is undefined
+-   `413` if the new freet content is more than 140 characters long
 
 #### `POST /api/users/session` - Sign in user
 
 **Body**
 
-- `username` _{string}_ - The user's username
-- `password` _{string}_ - The user's password
+-   `username` _{string}_ - The user's username
+-   `password` _{string}_ - The user's password
 
 **Returns**
 
-- A success message
-- An object with user's details (without password)
+-   A success message
+-   An object with user's details (without password)
 
 **Throws**
 
-- `403` if the user is already logged in
-- `400` if username or password is not in correct format format or missing in the req
-- `401` if the user login credentials are invalid
+-   `403` if the user is already logged in
+-   `400` if username or password is not in correct format format or missing in the req
+-   `401` if the user login credentials are invalid
 
 #### `DELETE /api/users/session` - Sign out user
 
 **Returns**
 
-- A success message
+-   A success message
 
 **Throws**
 
-- `403` if user is not logged in
+-   `403` if user is not logged in
 
 #### `POST /api/users` - Create an new user account
 
 **Body**
 
-- `username` _{string}_ - The user's username
-- `password` _{string}_ - The user's password
+-   `username` _{string}_ - The user's username
+-   `password` _{string}_ - The user's password
 
 **Returns**
 
-- A success message
-- An object with the created user's details (without password)
+-   A success message
+-   An object with the created user's details (without password)
 
 **Throws**
 
-- `403` if there is a user already logged in
-- `400` if username or password is in the wrong format
-- `409` if username is already in use
+-   `403` if there is a user already logged in
+-   `400` if username or password is in the wrong format
+-   `409` if username is already in use
 
 #### `PUT /api/users` - Update a user's profile
 
 **Body** _(no need to add fields that are not being changed)_
 
-- `username` _{string}_ - The user's username
-- `password` _{string}_ - The user's password
+-   `username` _{string}_ - The user's username
+-   `password` _{string}_ - The user's password
 
 **Returns**
 
-- A success message
-- An object with the update user details (without password)
+-   A success message
+-   An object with the update user details (without password)
 
 **Throws**
 
-- `403` if the user is not logged in
-- `400` if username or password is in the wrong format
-- `409` if the username is already in use
+-   `403` if the user is not logged in
+-   `400` if username or password is in the wrong format
+-   `409` if the username is already in use
 
 #### `DELETE /api/users` - Delete user
 
 **Returns**
 
-- A success message
+-   A success message
 
 **Throws**
 
-- `403` if the user is not logged in
-
+-   `403` if the user is not logged in
 
 #### `GET /api/diversify/remove` - Get no diversified freets
 
 **Returns**
 
-- A success message
+-   A success message
 
 **Throws**
 
-- `403` if the user is not logged in
-
+-   `403` if the user is not logged in
 
 #### `GET /api/diversify` - Get diversified freets
 
 **Returns**
 
-- A success message
+-   A success message
 
 **Throws**
 
-- `403` if the user is not logged in
-
-#### `GET /api/discussions` - Get all the discussions
-
-**Returns**
-
-- A list of all the discussions
+-   `403` if the user is not logged in
 
 #### `GET /api/discussions?freetId=id` - Get discussions of freet
 
 **Returns**
 
-- An array of discussions associated with the freetId
+-   An array of discussions associated with the freetId
 
 **Throws**
 
-- `400` if freetId is not given
-- `404` if the freetId is invalid
+-   `400` if freetId is not given
+-   `404` if the freetId is invalid
 
 #### `POST /api/discussions/:freetId` - Create new discussions for freet
 
 **Returns**
 
-- A success message
-- An object with the created discussion
+-   A success message
+-   An object with the created discussion
 
 **Throws**
 
-- `403` if the user is not logged in
-- `404` if the freetId is invalid
-
+-   `403` if the user is not logged in
+-   `404` if the freetId is invalid
 
 # FIX GET REPLIES BELOW
+
 #### `GET /api/replies` - Get all the replies
 
 **Returns**
 
-- A list of all the replies
+-   A list of all the replies
 
 #### `GET /api/replies?discussionId=id` - Get replies by discussion in decreasing order of upvotes
 
 **Returns**
 
-- An array of replies with discussionId
+-   An array of replies with discussionId
 
 **Throws**
 
-- `400` if `discussionId` is not given
-- `404` if `discussionId` is invalid
+-   `400` if `discussionId` is not given
+-   `404` if `discussionId` is invalid
 
 #### `GET /api/replies?authorId=id` - Get replies by author
 
 **Returns**
 
-- An array of replies created by user with id, authorId
+-   An array of replies created by user with id, authorId
 
 **Throws**
 
-- `400` if `authorId` is not given
-- `404` if `authorId` is invalid
+-   `400` if `authorId` is not given
+-   `404` if `authorId` is invalid
 
 #### `POST /api/replies/:discussionId` - Create new reply
 
 **Returns**
 
-- A success message
-- An object with the created reply
+-   A success message
+-   An object with the created reply
 
 **Throws**
 
-- `400` if the reply content is empty or a stream of empty spaces, or if `discussionId` is not given
-- `403` if the user is not logged in
-- `404` if `discussionId` is invalid
-- `413` if the reply content is more than 140 characters long
+-   `400` if the reply content is empty or a stream of empty spaces, or if `discussionId` is not given
+-   `403` if the user is not logged in
+-   `404` if `discussionId` is invalid
+-   `413` if the reply content is more than 140 characters long
 
 #### `DELETE /api/replies/:replyId` - Delete a reply
 
 **Returns**
 
-- A success message
+-   A success message
 
 **Throws**
 
-- `400` if `replyId` is not given
-- `403` if the user is not logged in, or user is not the author of the reply
-- `404` if `replyId` is invalid
+-   `400` if `replyId` is not given
+-   `403` if the user is not logged in, or user is not the author of the reply
+-   `404` if `replyId` is invalid
 
 #### `PUT /api/replies/:replyId` - Mdodify a reply
 
 **Body**
 
-- `content` _{string}_ - The content of the reply
+-   `content` _{string}_ - The content of the reply
 
 **Returns**
 
-- A success message
-- An object with the update user details (without password)
+-   A success message
+-   An object with the update user details (without password)
 
 **Throws**
 
-- `400` if `replyId` is not given, or the reply content is empty or a stream of empty spaces
-- `403` if the user is not logged in, or user is not the author of the reply
-- `404` if `replyId` is invalid
-- `413` is the reply content is more than 140 characters long
+-   `400` if `replyId` is not given, or the reply content is empty or a stream of empty spaces
+-   `403` if the user is not logged in, or user is not the author of the reply
+-   `404` if `replyId` is invalid
+-   `413` is the reply content is more than 140 characters long
 
 #### `GET /api/upvotes/:freetId` - Get upvote of freet
 
 **Returns**
 
-- A success message
-- The upvote value to the freet
+-   A success message
+-   The upvote value to the freet
 
 **Throws**
 
-- `403` if the user is not logged in
-- `404` if the freetId is invalid
+-   `403` if the user is not logged in
+-   `404` if the freetId is invalid
 
 #### `PUT /api/upvotes/:replyId/inc` - Increment upvote of associated replyId
 
 **Returns**
 
-- A success message
-- The updated upvote
+-   A success message
+-   The updated upvote
 
 **Throws**
- 
-- `400` if `replyId` is not given
-- `403` if the user is not logged in
-- `404` if the `replyId` is invalid
+
+-   `400` if `replyId` is not given
+-   `403` if the user is not logged in
+-   `404` if the `replyId` is invalid
 
 #### `PUT /api/upvotes/:replyId/dec` - Decrement upvote of associated replyId
 
 **Returns**
 
-- A success message
-- The updated upvote
+-   A success message
+-   The updated upvote
 
 **Throws**
- 
-- `400` if `replyId` is not given
-- `403` if the user is not logged in
-- `404` if the `replyId` is invalid
+
+-   `400` if `replyId` is not given
+-   `403` if the user is not logged in
+-   `404` if the `replyId` is invalid
