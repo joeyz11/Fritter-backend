@@ -25,8 +25,8 @@ const isDiscussionsByFreetExists = async (req: Request, res: Response, next: Nex
  * Checks if a discussion with discussionId exists
  */
 const isDiscussionsByIdExists = async (req: Request, res: Response, next: NextFunction) => {
-  const validFormat = Types.ObjectId.isValid(req.params.discussionId);  
-  const discussionId = req.params.discussionId
+  const validFormat = Types.ObjectId.isValid(req.params.discussionId) || Types.ObjectId.isValid(req.query.discussionId as string);  
+  const discussionId = req.params.discussionId || (req.query.discussionId as string)
 
   if (!discussionId) {
     res.status(400).json({

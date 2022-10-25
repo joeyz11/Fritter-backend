@@ -131,7 +131,7 @@ const isUserLoggedOut = (req: Request, res: Response, next: NextFunction) => {
 const isAuthorExists = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.query.author) {
     res.status(400).json({
-      error: 'Provided author username must be nonempty.'
+      error: 'Please provide author username.'
     });
     return;
   }
