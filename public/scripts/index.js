@@ -47,7 +47,6 @@ const formsAndHandlers = {
     // Discussion
     "view-discussions-of-freet": ViewDiscussionsOfFreet,
     // Reply
-    "view-all-replies": viewAllReplies,
     "view-replies-by-author": viewRepliesByAuthor,
     "view-ordered-replies-by-discussion": viewOrderedRepliesByDiscussion,
     "create-reply": createReply,

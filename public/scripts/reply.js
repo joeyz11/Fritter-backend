@@ -1,7 +1,3 @@
-function viewAllReplies(fields) {
-    fetch("/api/replies").then(showResponse).catch(showResponse);
-}
-
 function viewRepliesByAuthor(fields) {
     fetch(`/api/replies?author=${fields.author}`)
         .then(showResponse)

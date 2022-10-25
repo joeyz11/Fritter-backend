@@ -346,37 +346,6 @@ This renders the `index.html` file that will be used to interact with the backen
 -   `400` if freetId is not given
 -   `404` if the freetId is invalid
 
-#### `POST /api/discussions/:freetId` - Create new discussions for freet
-
-**Returns**
-
--   A success message
--   An object with the created discussion
-
-**Throws**
-
--   `403` if the user is not logged in
--   `404` if the freetId is invalid
-
-# FIX GET REPLIES BELOW
-
-#### `GET /api/replies` - Get all the replies
-
-**Returns**
-
--   A list of all the replies
-
-#### `GET /api/replies?discussionId=id` - Get replies by discussion in decreasing order of upvotes
-
-**Returns**
-
--   An array of replies with discussionId
-
-**Throws**
-
--   `400` if `discussionId` is not given
--   `404` if `discussionId` is invalid
-
 #### `GET /api/replies?authorId=id` - Get replies by author
 
 **Returns**
@@ -414,7 +383,7 @@ This renders the `index.html` file that will be used to interact with the backen
 -   `403` if the user is not logged in, or user is not the author of the reply
 -   `404` if `replyId` is invalid
 
-#### `PUT /api/replies/:replyId` - Mdodify a reply
+#### `PUT /api/replies/:replyId` - Modify a reply
 
 **Body**
 
